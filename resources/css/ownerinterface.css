@@ -1,0 +1,199 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    display: block;
+    margin: 100px;
+
+}
+
+h2{
+    font-size: xx-large;
+    font-weight: 450;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    border:2px solid grey;
+    border-radius: 10px;
+    height: 30px;
+    padding-top: 7px;
+
+}
+.footer{
+    margin-top: 20px;
+}
+
+.additems {
+    display: block;
+    border: solid;
+    margin-top: 20px;
+}
+.item-list {
+    border: 2px solid grey;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    flex-direction: row;
+}
+
+p{
+    margin: 0px;
+    font-size: medium;
+}
+.item-card {
+    width: 150px;
+    border: 2px solid #c1c1c1;
+
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+
+}
+.accrejbutton {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+}
+.rentalitems {
+    display: block;
+    border: solid;
+    margin-top: 20px;
+}
+
+.resaleitems {
+    display: block;
+    border: solid;
+    margin-top: 20px;
+}
+
+.sellrequest {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid;
+
+    margin-top: 20px;
+}
+
+.sellrequestbox {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid;
+
+
+
+}
+
+.itembox {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.item1 {
+    display: flex;
+    flex-direction: column;
+    border: solid;
+    border-radius: 10px;
+    border-width: 5px;
+    margin: 10px;
+    width: 150px;
+    height: fit-content;
+}
+
+.itempic {
+    display: flex;
+    justify-content: center;
+}
+
+.iteminfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0;
+}
+
+.itemtext {
+    margin: 1px;
+}
+
+.toggle-edit-btn{
+    width: 100%;
+    height: 30px%;
+}
+
+
+.sellreqbutton {
+    width: 150px;
+    height: 30px;
+}
+
+
+
+.logout {
+
+    margin-top: 20px;
+    width: 100%;
+    height: 40px;
+    font-size: medium;
+    border: 1px solid grey;
+    border-radius: 10px;
+
+
+}
+
+
+
+.edit-dropdown {
+    position: relative;
+    display: inline-block;
+
+
+}
+
+.edit-dropdown-content {
+    display: node;
+    position: absolute;
+    background-color: black;
+    width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border: solid 1px #ccc;
+    border-radius: 8px;
+
+
+}
+
+.edit-dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-align: left;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    background: none;
+    border: solid 1px #ccc;
+
+    cursor: pointer;
+
+}
+
+.edit-dropdown-content button:hover {
+    background-color: #ddd;
+    border: solid;
+}
+
+.edit-dropdown:hover .edit-dropdown-content {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    border: solid;
+    border-width: 5px;
+
+}
+p{
+    font-family: Quicksand;
+}

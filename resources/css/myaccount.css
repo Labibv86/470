@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
+
+
+body {
+    font-family: Quicksand;
+
+    margin: 0;
+    padding: 0;
+}
+
+.account-container {
+
+
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+h1 {
+    text-align: center;
+    color: black;
+    font-size: xx-large;
+    font-weight: 350;
+
+}
+
+.items p{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    margin: 0;
+
+
+
+}
+.sellitems{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+
+}
+.account-info {
+    font-size: 16px;
+    line-height: 1.8;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+
+}
+
+
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 50px;
+
+}
+.backtoexplore{
+    width: 200px;
+    height: 50px;
+    border: solid;
+    border-radius: 25px;
+    cursor: pointer;
+    border-color: grey;
+    font-size: large;
+}
+
+.trending {
+    display: block;
+
+    width: 100%;
+}
+.trendingtextbox {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+}
+.trendingitemsbox {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 50px;
+
+    width: 92%;
+}
+.item1 {
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+    min-width: 200px;
+
+
+
+
+    margin: 20px;
+    border: solid;
+    border-radius: 5px;
+}
+
+.itempic {
+
+}
+
+.iteminfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+
+
+}
+
+.sellinfo {
+    display: flex;
+    flex-direction: column;
+    border: solid;
+}
+
+
+
+.rentalinfo {
+
+}
+
+.rentalitems {
+
+}
+
+
+
+
+
+
