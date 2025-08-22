@@ -8,8 +8,7 @@
 
 
 
-<form action="{{ route('resale.action') }}" method="post">
-    @csrf
+
 
     <div class="whole">
         <div class="upper">
@@ -20,25 +19,37 @@
                     </div>
                     <div class="left2">
                         <div class="categorybox">
-                            <div class="category-dropdown">
-                                <button class="headerbuttons" name="category" type="button">Category</button>
-                                <div class="category-dropdown-content">
-                                    <button type="submit" name="S1 Class" value="S1 Class">S1 Class</button>
-                                    <button type="submit" name="A Class" value="A Class">A Class</button>
-                                    <button type="submit" name="B Class" value="B Class">B Class</button>
-                                    <button type="submit" name="C Class" value="C Class">C Class</button>
+
+                            <form action="{{ route('resale.page') }}" method="get">
+                                <div class="category-dropdown">
+                                    <button class="headerbuttons" type="button">Category</button>
+                                    <div class="category-dropdown-content">
+                                        <button type="submit" name="category" value="S1 Class">S1 Class</button>
+                                        <button type="submit" name="category" value="A Class">A Class</button>
+                                        <button type="submit" name="category" value="B Class">B Class</button>
+                                        <button type="submit" name="category" value="C Class">C Class</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                         <div class="menbox">
+                            <form action="{{ route('resale.action') }}" method="post">
+                                @csrf
                             <button class="headerbuttons" name="sell">Sell</button>
+                            </form>
                         </div>
                         <div class="womenbox">
+                            <form action="{{ route('resale.action') }}" method="post">
+                                @csrf
                             <button class="headerbuttons" name="manageshop">Manage Shop</button>
+                            </form>
                         </div>
                     </div>
                 </div>
+
                 <div class="searchbarbox">
+                    <form action="{{ route('resale.action') }}" method="post">
+                        @csrf
                     <div style="display: flex; align-items: center; position: relative;">
                         <input
                             class="searchbar"
@@ -55,29 +66,55 @@
                         </button>
                     </div>
                     <div id="searchResults" style="background-color: white; position: absolute; z-index: 999; width: 200px; border: 5px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto;"></div>
+                    </form>
                 </div>
+
 
                 <div class="optionbox">
                     <div class="accountbox">
+                        <form action="{{ route('resale.action') }}" method="post">
+                            @csrf
                         <button class="headerbuttons" name="myaccount">My Account</button>
+                        </form>
                     </div>
                     <div class="cartbox">
+                        <form action="{{ route('resale.action') }}" method="post">
+                            @csrf
                         <button class="headerbuttons" name="cart">Cart</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="middle">
-            <div class="sidebarbox">
-                <div class="uppersidebarbox">
-                    <button class="maintab" name="exploretab">Explore</button>
-                    <button class="maintab" name="rentaltab">Rental Items</button>
-                    <button class="maintab" name="resaletab">&#10097 Resale Items</button>
+                <div class="sidebarbox">
+
+                    <div class="uppersidebarbox">
+                        <form action="{{ route('resale.action') }}" method="POST">
+                            @csrf
+                        <button class="maintab" name="exploretab" type="submit">Explore</button>
+                        </form>
+                        <form action="{{ route('resale.action') }}" method="POST">
+                            @csrf
+                        <button class="maintab" name="rentaltab">Rental Items</button>
+                        </form>
+                        <form action="{{ route('resale.action') }}" method="POST">
+                            @csrf
+                        <button class="maintab" name="resaletab" type="submit">&#10097 Resale Items</button>
+                        </form>
+                    </div>
+                    <div class="lowersidebarbox">
+                        <form action="{{ route('resale.action') }}" method="POST">
+                            @csrf
+                        <button class="logout" name="logout" type="submit">Logout</button>
+                        </form>
+                    </div>
+
                 </div>
-                <div class="lowersidebarbox">
-                    <button class="logout" name="logout">Logout</button>
-                </div>
-            </div>
+
+
+
 
             <div class="midbox">
                 <div class="itemshowcase">
@@ -101,10 +138,10 @@
                                         </div>
                                         <div class="iteminfo">
                                             <p>Item Name: {{ $item->itemname }}</p>
-                                            <p>Bidding Price: {{ $item->biddingprice }} BDT</p>
+                                            <p>Bidding Price: {{ $item->resaleprice }} BDT</p>
                                         </div>
                                         <div class="iteminfobuttons">
-                                            <input class="setbid" type="number" name="setbid" min="0" placeholder="Enter Your Bid" />
+                                            <input class="setbid" type="number" name="setbid" min="{{ $item->resaleprice + 1 }}" placeholder="Enter Your Bid" />
                                             <input type="hidden" name="item_serial" value="{{ $item->itemserial }}">
                                             <button class="addtocart" name="bid" type="submit">Bid</button>
                                         </div>
@@ -144,7 +181,7 @@
             </div>
         </div>
     </div>
-</form>
+
 
 
 

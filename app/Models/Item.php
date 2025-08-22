@@ -27,9 +27,9 @@ class Item extends Model
 
     ];
     protected $casts = [
-        'resaleprice'   => 'float',
-        'rentalprice'   => 'float',
-        'biddingprice'  => 'float',
+        'resaleprice'   => 'integer',
+        'rentalprice'   => 'integer',
+        'biddingprice'  => 'integer',
         'totalcopies'   => 'integer',
         'shopid'        => 'integer',
     ];
@@ -41,7 +41,6 @@ class Item extends Model
     }
     public function rentalItems()
     {
-
         return $this->hasMany(RentalItem::class, 'itemid', 'itemserial');
     }
     public function resaleItems()

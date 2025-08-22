@@ -15,17 +15,15 @@ class RentalController extends Controller
 
     public function index(Request $request)
     {
+        $category = $request->input('category');
+
         $shops = Shop::all();
 
-        $category = null;
-        if ($request->has('S1 Class')) {
-            $category = $request->input('S1 Class');
-        } elseif ($request->has('A Class')) {
-            $category = $request->input('A Class');
-        } elseif ($request->has('B Class')) {
-            $category = $request->input('B Class');
-        } elseif ($request->has('C Class')) {
-            $category = $request->input('C Class');
+        if ($category) {
+
+            $itemsRental = Item::where('itemuse', 'Rental')->where('itemcategory', $category)->get();
+        } else {
+            $itemsRental = Item::where('itemuse', 'Rental')->get();
         }
 
         $itemsQuery = Item::where('itemuse', 'Rental');
@@ -109,6 +107,6 @@ class RentalController extends Controller
             return redirect()->route('login.page');
         }
 
-        return back();
+        return redirect()->route('rental.page');
     }
 }

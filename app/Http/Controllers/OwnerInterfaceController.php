@@ -38,13 +38,17 @@ class OwnerInterfaceController extends Controller
         ->where('itemuse', 'Resale')
         ->get();
     $itemsRental = Item::where('shopid', $shopId)
-        ->where('itemuse', 'like', 'Ren%')
+        ->where('itemuse', 'Rental')
         ->get();
 
     $sellRequests = SellRequest::where('shopid', $shopId)
         ->whereNotIn('itemstatus', ['Accepted', 'Rejected'])
         ->get();
-    $resaleItemsWithBidder = ResaleItem::where('shopid', $shopId)->get();
+    $resaleItemsWithBidder = ResaleItem::where('shopid', $shopId)
+        ->where('resalestatus', 'Resale')
+        ->get()
+        ->keyBy('itemid');
+
 
     return view('ownerinterface', compact(
         'shop',
@@ -104,6 +108,15 @@ class OwnerInterfaceController extends Controller
                     $user->save();
                 }
             }
+
+            $shop = Shop::find($sellRequest->shopid);
+            if ($shop) {
+                $shop->points = ($shop->points ?? 0) - $sellRequest->askingprice;
+                if ($shop->points < 0) {
+                    $shop->points = 0; // prevent negative points, adjust as needed
+                }
+                $shop->save();
+            }
         });
 
 
@@ -118,81 +131,148 @@ class OwnerInterfaceController extends Controller
     }
     public function addToResale(Request $request)
     {
-        $request->validate(['item_serial' => 'required|integer', 'resaleprice' => 'required|numeric|min:0']);
+        $request->validate([
+            'item_serial'  => 'required|integer|exists:items,itemserial',
+            'resale_price' => 'required|numeric|min:0',
+        ]);
+
+        // Find the item
         $item = Item::findOrFail($request->item_serial);
 
-        $item->resaleprice = $request->resaleprice;
+        // Update item properties
+        $item->resaleprice = $request->resale_price;
         $item->itemuse = 'Resale';
         $item->save();
 
+        // Create resale item
+        $resaleItem = new ResaleItem();
+        $resaleItem->itemid = $item->itemserial;      // foreign key to items table
+        $resaleItem->shopid = $item->shopid;          // from item
+        $resaleItem->lastbidderid = null;              // initially null
+        $resaleItem->currentbid = $item->resaleprice; // current bid = resaleprice updated above
+        $resaleItem->forcebuyprice = null;             // initially null
+        $resaleItem->resalestatus = $item->itemuse;    // should be "Resale" as set above
 
-        return back()->with('success', 'Item uploaded for Resale');
+        $resaleItem->save();
+
+        return back()->with('success', 'Item uploaded for Resale successfully.');
     }
     public function addToRental(Request $request)
     {
-        $request->validate(['item_serial' => 'required|integer', 'rentalprice' => 'required|numeric|min:0']);
+        $request->validate(['item_serial' => 'required|integer', 'rental_price' => 'required|numeric|min:0']);
         $item = Item::findOrFail($request->item_serial);
 
-        $item->rentalprice = $request->rentalprice;
+        $item->rentalprice = $request->rental_price;
         $item->itemuse = 'Rental';
-        $item->save();
+        try {
+            $item->save();
+            \Log::info('Item saved successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error saving item: ' . $e->getMessage());
+            return back()->withErrors('Error saving item.');
+        }
         return back()->with('success', 'Item uploaded for Rental');
     }
+
+
+    public function backtoShop(Request $request)
+    {
+        $request->validate(['item_serial' => 'required|integer']);
+        $item = Item::findOrFail($request->item_serial);
+        $item->itemuse = 'Inventory';
+        try {
+            $item->save();
+            \Log::info('Item saved successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error saving item: ' . $e->getMessage());
+            return back()->withErrors('Error saving item.');
+        }
+        return back()->with('success', 'Item uploaded for Rental');
+    }
+
+
+
+
+
     public function stopBidding(Request $request)
     {
         $request->validate([
-            'resale_item_serial' => 'required|integer|exists:resaleitems,serial',
+            'resale_item_serial' => 'required|integer|exists:resaleitems,resaleserial',
         ]);
-        $serial = $request->input('resale_item_serial');
-        $resaleItem = ResaleItem::where('serial', $serial)->firstOrFail();
 
-        if ($resaleItem->bidding_status ?? null === 'stopped') {
+
+        $resaleItem = ResaleItem::findOrFail($request->input('resale_item_serial'));
+
+
+        if (strtolower($resaleItem->resalestatus) === 'sold') {
             return back()->withErrors('Bidding has already been stopped for this item.');
         }
 
 
-        $resaleItem->bidding_status = 'stopped';
-        $resaleItem->itemuse = 'Sold'; // or other appropriate status
+        DB::beginTransaction();
 
-        // track winner from bids, get the highest bid and update ownership or notify
-        // Example (you must implement your bid model/logic accordingly):
-        /*
-        $highestBid = $resaleItem->bids()->orderByDesc('bid_amount')->first();
-        if ($highestBid) {
-            // Transfer ownership, update user records, notify winner etc.
+        try {
+
+            $resaleItem->resalestatus = 'sold';
+            $resaleItem->save();
+
+
+            $item = $resaleItem->item;
+            if ($item) {
+                $item->itemuse = 'sold';
+                $item->save();
+            }
+
+
+            $shop = $resaleItem->shop;
+            if ($shop) {
+
+                if (is_null($shop->points)) {
+                    $shop->points = 0;
+                }
+
+                $shop->points += $resaleItem->currentbid ?? 0;
+                $shop->save();
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Bidding has been successfully stopped and points updated.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error stopping bidding: ' . $e->getMessage());
+            return back()->withErrors('An error occurred while stopping the bidding.');
         }
-        */
-
-        $resaleItem->save();
-        $item = $resaleItem->item;
-        if ($item) {
-            $item->itemuse = 'Sold';
-            $item->save();
-        }
-
-        return back()->with('success', 'Bidding has been successfully stopped.');
     }
 
 
+
     public function editItem(Request $request)
+
     {
+        \Log::info('EditItem Request Data:', $request->all());
+
         $request->validate([
             'item_serial'      => 'required|integer|exists:items,itemserial',
-            'edititemname'     => 'required|string|max:255',
-            'edititemmodel'    => 'required|string|max:255',
-            'edititemcategory' => 'required|string|max:100',
-            'edititemstatus'   => 'required|string|max:50',
-            'edititemcondition'=> 'required|string|max:50',
-            'edititemgender'   => 'required|string|max:50',
-            'edititemdescription' => 'required|string|max:1000',
-            'editresaleprice'  => 'required|numeric|min:0',
-            'editrentalprice'  => 'required|numeric|min:0',
-            'editbiddingprice' => 'required|numeric|min:0',
-            'edittotalcopies'  => 'required|integer|min:0',
+            'edititemname'     => 'sometimes|string|max:255',
+            'edititemmodel'    => 'sometimes|string|max:255',
+            'edititemcategory' => 'sometimes|string|max:100',
+            'edititemstatus'   => 'sometimes|string|max:50',
+            'edititemcondition'=> 'sometimes|string|max:50',
+            'edititemgender'   => 'sometimes|string|max:50',
+            'edititemdescription' => 'sometimes|string|max:1000',
+            'editresaleprice'  => 'sometimes|numeric|min:0',
+            'editrentalprice'  => 'sometimes|numeric|min:0',
+            'editbiddingprice' => 'sometimes|numeric|min:0',
+            'edittotalcopies'  => 'sometimes|integer|min:0',
             'edititemimage'    => 'nullable|image|max:2048',
         ]);
 
+
         $item = Item::findOrFail($request->item_serial);
+        \Log::info('Found item:', ['itemserial' => $item->itemserial]);
+
 
         if ($request->hasFile('edititemimage')) {
 
@@ -203,8 +283,12 @@ class OwnerInterfaceController extends Controller
             $item->itemimage = $path;
         }
 
-        // Update other fields
-        $item->itemname        = $request->input('edititemname');
+
+        if ($request->has('edititemname')) {
+            $item->itemname = $request->edititemname;
+        }
+
+
         $item->itemmodel       = $request->input('edititemmodel');
         $item->itemcategory    = $request->input('edititemcategory');
         $item->itemstatus      = $request->input('edititemstatus');
@@ -216,9 +300,14 @@ class OwnerInterfaceController extends Controller
         $item->biddingprice    = $request->input('editbiddingprice');
         $item->totalcopies     = $request->input('edittotalcopies');
 
+        try {
+            $item->save();
+            \Log::info('Item saved successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Error saving item: ' . $e->getMessage());
+            return back()->withErrors('Error saving item.');
+        }
 
-
-        $item->save();
 
         return back()->with('success', 'Item Information Updated!');
 

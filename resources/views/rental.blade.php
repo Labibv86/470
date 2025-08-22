@@ -9,8 +9,7 @@
 </head>
 <body>
 
-<form action="{{ route('rental.navigate') }}" method="POST">
-    @csrf
+
     <div class="whole">
         <div class="upper">
             <div class="headerbox">
@@ -21,65 +20,103 @@
                     <div class="left2">
                         <div class="categorybox">
                             <div class="category-dropdown">
+                                <form action="{{ route('rental.page') }}" method="get">
+                                    @csrf
                                 <button class="headerbuttons" name="category" type="button">Category</button>
                                 <div class="category-dropdown-content">
-                                    <button type="submit" name="S1 Class" value="S1 Class">S1 Class</button>
-                                    <button type="submit" name="A Class" value="A Class">A Class</button>
-                                    <button type="submit" name="B Class" value="B Class">B Class</button>
-                                    <button type="submit" name="C Class" value="C Class">C Class</button>
+                                    <button type="submit" name="category" value="S1 Class">S1 Class</button>
+                                    <button type="submit" name="category" value="A Class">A Class</button>
+                                    <button type="submit" name="category" value="B Class">B Class</button>
+                                    <button type="submit" name="category" value="C Class">C Class</button>
                                 </div>
+                                </form>
                             </div>
                         </div>
 
                         <div class="menbox">
+                            <form action="{{ route('rental.navigate') }}" method="POST">
+                                @csrf
                             <button class="headerbuttons" name="sell">Sell</button>
+                            </form>
                         </div>
                         <div class="womenbox">
+                            <form action="{{ route('rental.navigate') }}" method="POST">
+                                @csrf
                             <button class="headerbuttons" name="manageshop">Manage Shop</button>
+                            </form>
                         </div>
                     </div>
                 </div>
 
                 <div class="searchbarbox">
-                    <div style="display: flex; align-items: center; position: relative;">
-                        <input
-                            class="searchbar"
-                            type="text"
-                            id="searchInput"
-                            name="search"
-                            placeholder="Search for items..."
-                            autocomplete="off"
-                            onkeyup="liveSearch()"
-                        >
-                        <button type="submit" style="position: absolute; margin-bottom:10px; margin-right:2px;  right: 0; height: 46px; padding: 0 15px; border: none; background-color: grey; color: white; border-radius: 0 8px 8px 0; cursor: pointer; font-family:Quicksand; font-size:x-large;">
-                            Search
-                        </button>
-                    </div>
-                    <div id="searchResults" style="background-color: white; position: absolute; z-index: 999; width: 200px; border: 5px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto;"></div>
+                    <form action="{{ route('rental.navigate') }}" method="post">
+                        @csrf
+                        <div style="display: flex; align-items: center; position: relative;">
+                            <input
+                                class="searchbar"
+                                type="text"
+                                id="searchInput"
+                                name="search"
+                                placeholder="Search for items..."
+                                autocomplete="off"
+                                onkeyup="liveSearch()"
+                            >
+                            <button type="submit"
+                                    style="position: absolute; margin-bottom:10px; margin-right:2px; right: 0; height: 46px; padding: 0 15px; border: none; background-color: grey; color: white; border-radius: 0 8px 8px 0; cursor: pointer; font-family:Quicksand; font-size:x-large;">
+                                Search
+                            </button>
+                        </div>
+                        <div id="searchResults" style="background-color: white; position: absolute; z-index: 999; width: 200px; border: 5px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto;"></div>
+                    </form>
                 </div>
+
 
                 <div class="optionbox">
                     <div class="accountbox">
+                        <form action="{{ route('rental.navigate') }}" method="POST">
+                            @csrf
                         <button class="headerbuttons" name="myaccount">My Account</button>
+                        </form>
                     </div>
                     <div class="cartbox">
+                        <form action="{{ route('rental.navigate') }}" method="POST">
+                            @csrf
                         <button class="headerbuttons" name="cart">Cart</button>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="middle">
+
             <div class="sidebarbox">
+
                 <div class="uppersidebarbox">
+
+                    <form action="{{ route('rental.navigate') }}" method="POST">
+                        @csrf
                     <button class="maintab" name="exploretab" type="submit">Explore</button>
-                    <button class="maintab" disabled>&#10097; Rental Items</button>
+                    </form>
+                    <form action="{{ route('rental.navigate') }}" method="POST">
+                        @csrf
+                    <button class="maintab" disabled>&#10097 Rental Items</button>
+                    </form>
+                    <form action="{{ route('rental.navigate') }}" method="POST">
+                        @csrf
                     <button class="maintab" name="resaletab" type="submit">Resale Items</button>
+                    </form>
                 </div>
                 <div class="lowersidebarbox">
+                    <form action="{{ route('rental.navigate') }}" method="POST">
+                        @csrf
                     <button class="logout" name="logout" type="submit">Logout</button>
+                    </form>
                 </div>
+
             </div>
+
+
 
             <div class="midbox">
                 <div class="itemshowcase">
@@ -144,9 +181,10 @@
 
                 </div>
             </div>
+
         </div>
     </div>
-</form>
+
 
 <script>
     function liveSearch(){

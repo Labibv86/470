@@ -10,17 +10,8 @@ class ExploreController extends Controller
 {
     public function index(Request $request)
     {
+        $category = $request->input('category');
 
-        $category = null;
-        if ($request->has('S1 Class')) {
-            $category = $request->input('S1 Class');
-        } elseif ($request->has('A Class')) {
-            $category = $request->input('A Class');
-        } elseif ($request->has('B Class')) {
-            $category = $request->input('B Class');
-        } elseif ($request->has('C Class')) {
-            $category = $request->input('C Class');
-        }
         $shops = Shop::all();
 
         if ($category) {
@@ -32,6 +23,7 @@ class ExploreController extends Controller
             $items_resale = Item::where('itemuse', 'Resale')->get();
             $items_rental = Item::where('itemuse', 'Rental')->get();
         }
+
 
         if ($request->isMethod('post')) {
             $redirects = [

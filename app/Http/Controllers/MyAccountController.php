@@ -22,7 +22,6 @@ class MyAccountController extends Controller
         $user = Auth::user();
 
 
-
         if (!$user) {
             return redirect()->route('login.page')->withErrors('Please login first.');
         }

@@ -20,10 +20,11 @@
                             <div class="category-dropdown">
                                 <button class="headerbuttons" name="category" type="button">Category</button>
                                 <div class="category-dropdown-content">
-                                    <button type="submit" name="S1 Class" value="S1 Class">S1 Class</button>
-                                    <button type="submit" name="A Class" value="A Class">A Class</button>
-                                    <button type="submit" name="B Class" value="B Class">B Class</button>
-                                    <button type="submit" name="C Class" value="C Class">C Class</button>
+                                    <button type="submit" name="category" value="S1 Class">S1 Class</button>
+                                    <button type="submit" name="category" value="A Class">A Class</button>
+                                    <button type="submit" name="category" value="B Class">B Class</button>
+                                    <button type="submit" name="category" value="C Class">C Class</button>
+
                                 </div>
                             </div>
                         </div>
@@ -91,9 +92,7 @@
                                         <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
                                     </div>
                                     <div class="iteminfo">
-                                        <p>Item Name: {{ $item->itemname }}</p>
-                                        <p>Resale Price: {{ $item->resaleprice }} BDT</p>
-                                        <p>Rental Price: {{ $item->rentalprice }}/Week</p>
+                                        <p>{{ $item->itemname }}</p>
                                     </div>
                                 </div>
                             @endforeach
@@ -114,9 +113,7 @@
                                         <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
                                     </div>
                                     <div class="iteminfo">
-                                        <p>Item Name: {{ $item->itemname }}</p>
-                                        <p>Force Buy: {{ $item->resaleprice }} BDT</p>
-                                        <p>Bidding Price: {{ $item->biddingprice }} BDT</p>
+                                        <p>{{ $item->itemname }}</p>
                                     </div>
                                 </div>
                             @endforeach
@@ -137,8 +134,7 @@
                                         <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
                                     </div>
                                     <div class="iteminfo">
-                                        <p>Item Name: {{ $item->itemname }}</p>
-                                        <p>Rental Price: {{ $item->rentalprice }}/Week</p>
+                                        <p>{{ $item->itemname }}</p>
                                     </div>
                                 </div>
                             @endforeach

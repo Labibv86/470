@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 
-
 body {
     font-family: 'Quicksand', sans-serif;
     display: block;
@@ -12,6 +11,7 @@ h2{
     font-size: xx-large;
     font-weight: 450;
 }
+
 .header {
     display: flex;
     flex-direction: row;
@@ -22,15 +22,25 @@ h2{
     padding-top: 7px;
 
 }
+
 .footer{
     margin-top: 20px;
 }
 
-.additems {
-    display: block;
-    border: solid;
-    margin-top: 20px;
+
+
+.add-items-section{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: solid 3px grey;
+    border-radius: 10px;
+    width: 400px;
+    height: 400px;
+
+
 }
+
 .item-list {
     border: 2px solid grey;
     border-radius: 10px;
@@ -81,15 +91,11 @@ p{
     display: flex;
     flex-direction: row;
     border: 1px solid;
-
-
-
 }
 
 .itembox {
     display: flex;
     flex-direction: row;
-
 }
 
 .item1 {

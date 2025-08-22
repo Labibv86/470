@@ -25,10 +25,10 @@
             <div class="boxes">
                 <select class="allinputbox" id="category" name="category" required>
                     <option value="">Select Car Performance Class</option>
-                    <option value="clothing" {{ old('category') == 'S1 Class' ? 'selected' : '' }}>S1 Class</option>
-                    <option value="shoes" {{ old('category') == 'A Class' ? 'selected' : '' }}>A Class</option>
-                    <option value="bags" {{ old('category') == 'B Class' ? 'selected' : '' }}>B Class</option>
-                    <option value="accessories" {{ old('category') == 'C Class' ? 'selected' : '' }}>C Class</option>
+                    <option value='S1 Class' {{ old('category') == 'S1 Class' ? 'selected' : '' }}>S1 Class</option>
+                    <option value='A Class' {{ old('category') == 'A Class' ? 'selected' : '' }}>A Class</option>
+                    <option value='B Class' {{ old('category') == 'B Class' ? 'selected' : '' }}>B Class</option>
+                    <option value='C Class' {{ old('category') == 'C Class' ? 'selected' : '' }}>C Class</option>
                 </select>
             </div>
 
