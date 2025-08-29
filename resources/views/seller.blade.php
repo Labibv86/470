@@ -3,7 +3,7 @@
 <head>
     <title>Send Sell Request</title>
 {{--    @vite(['resources/css/seller.css'])--}}
-    <link href="/resources/css/seller.css" rel="stylesheet">
+    <link href="/css/seller.css" rel="stylesheet">
 
 </head>
 <body>

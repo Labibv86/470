@@ -4,7 +4,7 @@
     <title>Login or Sign up</title>
 
 {{--  @vite(['public//login.css'])--}}
-    <link href="/resources/css/login.css" rel="stylesheet">
+    <link href="/css/login.css" rel="stylesheet">
 </head>
 
 <body>

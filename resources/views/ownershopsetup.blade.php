@@ -3,7 +3,7 @@
 <head>
     <title>Setup Shop</title>
 {{--    @vite(['resources/css/ownershopsetup.css'])--}}
-    <link href="/resources/css/ownershopsetup.css" rel="stylesheet">
+    <link href="/css/ownershopsetup.css" rel="stylesheet">
 
 
 </head>

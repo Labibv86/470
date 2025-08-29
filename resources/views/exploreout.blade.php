@@ -3,7 +3,7 @@
 <head>
     <title>CarVault</title>
 {{--    @vite(['resources/css/explore.css'])--}}
-    <link href="/resources/css/explore.css" rel="stylesheet">
+    <link href="/css/explore.css" rel="stylesheet">
 
 </head>
 <body>
