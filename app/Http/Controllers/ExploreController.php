@@ -32,7 +32,7 @@ class ExploreController extends Controller
                 'myaccount'  => 'myaccount.page',
                 'resaletab'  => 'resale.page',
                 'rentaltab'  => 'rental.page',
-                'cart'       => 'cart.page',
+                'cart'       => 'cart.index',
             ];
 
             foreach ($redirects as $input => $route) {

@@ -19,7 +19,7 @@
 
         <form action="{{ route('ownerinterface.additem') }}" method="POST" enctype="multipart/form-data">
             @csrf
-            <div><input type="text" name="itemname" placeholder="Make" value="{{ old('itemname') }}" required /></div>
+            <div ><input type="text" name="itemname" placeholder="Make" value="{{ old('itemname') }}" required /></div>
             <div><input type="text" name="itemmodel" placeholder="Model" value="{{ old('itemmodel') }}" required /></div>
             <div>
                 <select name="itemcategory" required>
@@ -33,7 +33,7 @@
 
             <div>
                 <select name="itemstatus" required>
-                    <option value="">Item's Status</option>
+                    <option value="">Car's Status</option>
                     <option value="Verified" {{ old('itemstatus') == 'Verified' ? 'selected' : '' }}>Verified</option>
                     <option value="Unofficial" {{ old('itemstatus') == 'Unofficial' ? 'selected' : '' }}>Unofficial</option>
                 </select>
@@ -41,7 +41,7 @@
 
             <div>
                 <select name="itemcondition" required>
-                    <option value="">Item's Condition</option>
+                    <option value="">Car's Condition</option>
                     <option value="New" {{ old('itemcondition') == 'New' ? 'selected' : '' }}>New</option>
                     <option value="Used" {{ old('itemcondition') == 'Used' ? 'selected' : '' }}>Used</option>
                 </select>
@@ -68,32 +68,36 @@
         </form>
     </div>
 
-    <!-- Rental Items Section -->
+
+
     <div class="rental-items-section">
         <h2>Rental Items</h2>
         <div class="item-list">
             @foreach($itemsRental as $item)
-                @php
-                    $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+            @php
+                $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+                $renterId = $rentalItem[$item->itemserial]->renterid ?? 'N/A';
 
-                    $renterId = $rentalitems[$item->itemserial]->renterid ?? 'N/A';
-                @endphp
-                <div class="item-card">
-                    <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:150px; height:150px; object-fit:cover;">
-                    <p>Item Name: {{ $item->itemname }}</p>
-                    <p>Model: {{ $item->itemmodel }}</p>
-                    <p>Rental Price: {{ $item->rentalprice }} BDT</p>
+            @endphp
+            <div class="item-card">
+                <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px; object-fit:cover;">
+                <p>Item Name: {{ $item->itemname }}</p>
+                <p>Model: {{ $item->itemmodel }}</p>
+                <p>Rental Price: {{ $item->rentalprice }} BDT</p>
+                <p class="itemtext">Renter ID: {{ $renterId }}</p>
 
-                    <p class="itemtext">Renter ID: {{ $renterId }}</p>
-                    <!-- Use Blade syntax for hidden input -->
-                    <input type="hidden" name="resale_item_serial" value="{{ $item->ItemSerial }}">
-                </div>
+                <form action="{{ route('ownerinterface.addtorental') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="item_serial" value="{{ $item->itemserial }}">
+                    <input type="hidden" name="shop_id" value="{{ $item->shopid }}">
+                    <input type="hidden" name="rental_price" value="{{ $item->rentalprice }}">
+                </form>
+            </div>
             @endforeach
-
         </div>
     </div>
 
-    <!-- Resale Items Section -->
+
     <div class="resale-items-section">
         <h2>Resale Items</h2>
         <div class="item-list">
@@ -105,7 +109,7 @@
                     $resaleSl = $resaleItemsWithBidder[$item->itemserial]->resaleserial;
                 @endphp
                 <div class="item-card">
-                    <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:150px; height:150px; object-fit:cover;">
+                    <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px;  object-fit:cover;">
                     <p>Item Name: {{ $item->itemname }}</p>
                     <p>Model: {{ $item->itemmodel }}</p>
                     <p>Resale Price: {{ $item->resaleprice }}</p>
@@ -165,7 +169,7 @@
                     </div>
                 </div>
             @empty
-                <p>No sell requests at the moment.</p>
+
             @endforelse
         </div>
     </div>
@@ -177,21 +181,23 @@
     <div class="item-list">
         @foreach($itemsInventory as $item)
             @php
-                $imageSrc = $item->itemimage
-                    ? asset('storage/' . $item->itemimage)
-                    : asset('images/default-item.png');
+                $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+                $customerInfo = $itemCustomerInfo[$item->itemserial] ?? null;
             @endphp
 
             <div class="item-card">
-                <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:150px; height:150px; object-fit:cover;">
-
-                <p><strong>Item Name:</strong> {{ $item->itemname }}</p>
-                <p><strong>Item Model:</strong> {{ $item->itemmodel }}</p>
+                <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px; height:150px; object-fit:cover;">
+                <p><strong>Car Make:</strong> {{ $item->itemname }}</p>
+                <p><strong>Car Model:</strong> {{ $item->itemmodel }}</p>
                 <p><strong>Resale Price:</strong> {{ $item->resaleprice }}</p>
                 <p><strong>Rental Price:</strong> {{ $item->rentalprice }}</p>
                 <p><strong>Bidding Price:</strong> {{ $item->biddingprice }}</p>
-                <p><strong>Item Serial:</strong> {{ $item->itemserial }}</p>
+                <p><strong>Car Serial:</strong> {{ $item->itemserial }}</p>
                 <p><strong>Status:</strong> {{ $item->itemuse }}</p>
+
+
+
+
 
 
                 <form action="{{ route('ownerinterface.addtoresale') }}" method="POST" style="display:inline;">
@@ -222,6 +228,20 @@
                     <input type="hidden" name="item_serial" value="{{ $item->itemserial }}">
                     <button type="submit" class="sellreqbutton">Drop</button>
                 </form>
+
+                <div class="customer-info-container">
+                    <button class="sellreqbutton">Customer Info</button>
+                    <div class="customer-info-tooltip">
+                        @if($customerInfo)
+                            <p><strong>Name:</strong> {{ $customerInfo->firstname }} {{ $customerInfo->lastname }}</p>
+                            <p><strong>Email:</strong> {{ $customerInfo->email }}</p>
+                            <p><strong>Phone:</strong> {{ $customerInfo->phone }}</p>
+                            <p><strong>Address:</strong> {{ $customerInfo->address }}</p>
+                        @else
+                            <p>N/A - Not currently rented or sold</p>
+                        @endif
+                    </div>
+                </div>
 
 
                 <div class="edit-section" style="margin-top:10px;">
@@ -288,6 +308,7 @@
                         <button type="submit" class="sellreqbutton" style="margin-top:10px;">Save Changes</button>
                     </form>
                 </div>
+
             </div>
         @endforeach
     </div>
@@ -306,6 +327,8 @@
         });
     });
 </script>
+
+
 
 
 

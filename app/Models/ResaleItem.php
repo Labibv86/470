@@ -22,6 +22,12 @@ class ResaleItem extends Model
     {
         return $this->belongsTo(Item::class, 'itemid', 'itemserial');
     }
+//
+//    public function lastBidder()
+//    {
+//        return $this->belongsTo(User::class, 'lastbidderid', 'userid');
+//    }
+
 
     public function shop()
     {

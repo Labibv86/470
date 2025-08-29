@@ -10,10 +10,12 @@
 <form method="POST" action="{{ route('login.attempt') }}">
     @csrf <!-- Laravel's CSRF protection -->
 
+
     <div class="mainbox">
         <div class="header">
             <img class="logo" src="{{ asset('images/websitelogo.PNG') }}" alt="logo">
         </div>
+
 
         <div class="main">
             <div class="whole">

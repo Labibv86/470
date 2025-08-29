@@ -21,7 +21,6 @@ class OwnerInterfaceController extends Controller
     $shopEmail = Session::get('shopemail');
     $shopPassword = Session::get('shoppassword');
 
-
     $shop = Shop::where('shopemail', $shopEmail)
         ->where('shoppassword', $shopPassword)
         ->first();
@@ -31,14 +30,16 @@ class OwnerInterfaceController extends Controller
     }
 
     $shopId = $shop->shopid;
+
+    // Your existing item queries
     $itemsInventory = Item::where('shopid', $shopId)
-        ->where('itemuse', '!=', 'Sold')
+        ->where('itemuse', '!=', 'old')
         ->get();
     $itemsResale = Item::where('shopid', $shopId)
         ->where('itemuse', 'Resale')
         ->get();
     $itemsRental = Item::where('shopid', $shopId)
-        ->where('itemuse', 'Rental')
+        ->where('itemuse', 'LIKE', 'Rental')
         ->get();
 
     $sellRequests = SellRequest::where('shopid', $shopId)
@@ -49,6 +50,39 @@ class OwnerInterfaceController extends Controller
         ->get()
         ->keyBy('itemid');
 
+    // Get customer info for each inventory item
+    $itemCustomerInfo = [];
+    foreach ($itemsInventory as $item) {
+        $customerInfo = null;
+
+        // Check rental items
+        $rentalItem = RentalItem::where('itemid', $item->itemserial)
+            ->where('shopid', $shopId)
+            ->where('itemstatus', 'Rented')
+            ->first();
+
+        if ($rentalItem) {
+            $customer = User::find($rentalItem->renterid);
+            if ($customer) {
+                $customerInfo = $customer;
+            }
+        } else {
+            // Check resale items
+            $resaleItem = ResaleItem::where('itemid', $item->itemserial)
+                ->where('shopid', $shopId)
+                ->where('resalestatus', 'Sold')
+                ->first();
+
+            if ($resaleItem) {
+                $customer = User::find($resaleItem->lastbidderid);
+                if ($customer) {
+                    $customerInfo = $customer;
+                }
+            }
+        }
+
+        $itemCustomerInfo[$item->itemserial] = $customerInfo;
+    }
 
     return view('ownerinterface', compact(
         'shop',
@@ -56,19 +90,77 @@ class OwnerInterfaceController extends Controller
         'itemsResale',
         'itemsRental',
         'sellRequests',
-        'resaleItemsWithBidder'
+        'resaleItemsWithBidder',
+        'itemCustomerInfo', // ← ADD THIS
+        'shopId' // ← ADD THIS if you need it in blade
     ));
 }
+    public function getCustomerLocation($id)
+    {
+        $customer = User::find($id);
+
+        if (!$customer || !$customer->address) {
+            return response()->json([
+                'error' => 'Customer address not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'address' => $customer->address,
+            'name' => $customer->firstname . ' ' . $customer->lastname,
+            'phone' => $customer->phone
+        ]);
+    }
     public function dropItem(Request $request)
     {
         $request->validate(['item_serial' => 'required|integer']);
-        $item = Item::findOrFail($request->item_serial);
 
-        if ($item->itemimage && Storage::disk('public')->exists($item->itemimage)) {
-            Storage::disk('public')->delete($item->itemimage);
+        try {
+            // Find the item
+            $item = Item::findOrFail($request->item_serial);
+
+            // Check if item can be dropped (only Inventory, Rental, or Sold status)
+            $allowedStatuses = ['Inventory', 'Rental', 'Sold'];
+
+            if (!in_array($item->itemuse, $allowedStatuses)) {
+                return back()->withErrors('Vehicle under Rental Deal/Resale Auction. Cannot be dropped.');
+            }
+
+            // Start transaction for data consistency
+            DB::beginTransaction();
+
+            // Delete from resaleitems table
+            ResaleItem::where('itemid', $item->itemserial)->delete();
+
+            // Delete from rentalitems table
+            RentalItem::where('itemid', $item->itemserial)->delete();
+
+            // Delete the image file if it exists
+            if ($item->itemimage && Storage::disk('public')->exists($item->itemimage)) {
+                Storage::disk('public')->delete($item->itemimage);
+            }
+
+            // Delete the item itself
+            $item->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            \Log::info('Item and all related records deleted successfully.');
+
+            return back()->with('success', 'Item Dropped Successfully!');
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return back()->withErrors('Item not found.');
+        } catch (\Exception $e) {
+            // Rollback transaction if it was started
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+
+            \Log::error('Error dropping item: ' . $e->getMessage());
+            return back()->withErrors('Error dropping item. Please try again.');
         }
-        $item->delete();
-        return back()->with('success', 'Item Dropped!');
     }
 
     public function acceptSellRequest(Request $request)
@@ -139,55 +231,123 @@ class OwnerInterfaceController extends Controller
         // Find the item
         $item = Item::findOrFail($request->item_serial);
 
-        // Update item properties
-        $item->resaleprice = $request->resale_price;
-        $item->itemuse = 'Resale';
-        $item->save();
+        // Start transaction for data consistency
+        DB::beginTransaction();
 
-        // Create resale item
-        $resaleItem = new ResaleItem();
-        $resaleItem->itemid = $item->itemserial;      // foreign key to items table
-        $resaleItem->shopid = $item->shopid;          // from item
-        $resaleItem->lastbidderid = null;              // initially null
-        $resaleItem->currentbid = $item->resaleprice; // current bid = resaleprice updated above
-        $resaleItem->forcebuyprice = null;             // initially null
-        $resaleItem->resalestatus = $item->itemuse;    // should be "Resale" as set above
+        try {
+            // Update item properties
+            $item->resaleprice = $request->resale_price;
+            $item->itemuse = 'Resale';
+            $item->save();
 
-        $resaleItem->save();
+            // Delete from rentalitems table if exists
+            RentalItem::where('itemid', $item->itemserial)->delete();
 
-        return back()->with('success', 'Item uploaded for Resale successfully.');
+            // Create resale item
+            $resaleItem = new ResaleItem();
+            $resaleItem->itemid = $item->itemserial;      // foreign key to items table
+            $resaleItem->shopid = $item->shopid;          // from item
+            $resaleItem->lastbidderid = null;              // initially null
+            $resaleItem->currentbid = $item->resaleprice; // current bid = resaleprice updated above
+            $resaleItem->forcebuyprice = null;             // initially null
+            $resaleItem->resalestatus = $item->itemuse;    // should be "Resale" as set above
+
+            $resaleItem->save();
+
+            // Commit transaction
+            DB::commit();
+
+            return back()->with('success', 'Item uploaded for Resale successfully.');
+
+        } catch (\Exception $e) {
+            // Rollback transaction on error
+            DB::rollBack();
+
+            \Log::error('Error adding item to resale: ' . $e->getMessage());
+            return back()->withErrors('Error adding item to resale. Please try again.');
+        }
     }
     public function addToRental(Request $request)
     {
-        $request->validate(['item_serial' => 'required|integer', 'rental_price' => 'required|numeric|min:0']);
+        $request->validate([
+            'item_serial'   => 'required|integer|exists:items,itemserial',
+            'rental_price'  => 'required|numeric|min:0',
+        ]);
+
+        // Find the item
         $item = Item::findOrFail($request->item_serial);
 
-        $item->rentalprice = $request->rental_price;
-        $item->itemuse = 'Rental';
+        // Start transaction for data consistency
+        DB::beginTransaction();
+
         try {
+            // Update item properties
+            $item->rentalprice = $request->rental_price;
+            $item->itemuse = 'Rental';
             $item->save();
-            \Log::info('Item saved successfully.');
+
+            // Delete from resaleitems table if exists
+            ResaleItem::where('itemid', $item->itemserial)->delete();
+
+            // Create rental item
+            $rentalItem = new RentalItem();
+            $rentalItem->itemid = $item->itemserial;      // foreign key to items table
+            $rentalItem->shopid = $item->shopid;          // from item
+            $rentalItem->renterid = null;                 // initially null (no renter yet)
+            $rentalItem->rentpaid = null;                 // initially null (no payment yet)
+            $rentalItem->rentdate = null;                 // initially null (not rented yet)
+            $rentalItem->returndate = null;               // initially null (not rented yet)
+            $rentalItem->itemstatus = 'Available';        // set status as Available for rent
+
+            $rentalItem->save();
+
+            // Commit transaction
+            DB::commit();
+
+            return back()->with('success', 'Item uploaded for Rental successfully.');
+
         } catch (\Exception $e) {
-            \Log::error('Error saving item: ' . $e->getMessage());
-            return back()->withErrors('Error saving item.');
+            // Rollback transaction on error
+            DB::rollBack();
+
+            \Log::error('Error adding item to rental: ' . $e->getMessage());
+            return back()->withErrors('Error adding item to rental. Please try again.');
         }
-        return back()->with('success', 'Item uploaded for Rental');
     }
 
 
     public function backtoShop(Request $request)
     {
         $request->validate(['item_serial' => 'required|integer']);
-        $item = Item::findOrFail($request->item_serial);
-        $item->itemuse = 'Inventory';
+
         try {
+            // Find the item
+            $item = Item::findOrFail($request->item_serial);
+
+            // Start transaction for data consistency
+            DB::beginTransaction();
+
+            // Update item properties
+            $item->itemuse = 'Inventory';
             $item->save();
-            \Log::info('Item saved successfully.');
+
+            // Delete the corresponding row from rentalitems table
+            RentalItem::where('itemid', $item->itemserial)->delete();
+            ResaleItem::where('itemid', $item->itemserial)->delete();
+
+            DB::commit();
+
+            \Log::info('Item moved back to inventory and rental record deleted successfully.');
+
+            return back()->with('success', 'Item moved back to inventory successfully.');
+
         } catch (\Exception $e) {
-            \Log::error('Error saving item: ' . $e->getMessage());
-            return back()->withErrors('Error saving item.');
+            // Rollback transaction on error
+            DB::rollBack();
+
+            \Log::error('Error moving item to inventory: ' . $e->getMessage());
+            return back()->withErrors('Error moving item to inventory.');
         }
-        return back()->with('success', 'Item uploaded for Rental');
     }
 
 
@@ -200,37 +360,47 @@ class OwnerInterfaceController extends Controller
             'resale_item_serial' => 'required|integer|exists:resaleitems,resaleserial',
         ]);
 
-
         $resaleItem = ResaleItem::findOrFail($request->input('resale_item_serial'));
 
-
-        if (strtolower($resaleItem->resalestatus) === 'sold') {
+        if (strtolower($resaleItem->resalestatus) === 'Sold') {
             return back()->withErrors('Bidding has already been stopped for this item.');
         }
-
 
         DB::beginTransaction();
 
         try {
+            // Check if there's no last bidder
+            if (empty($resaleItem->lastbidderid)) {
+                // No bids were placed - move item back to inventory
+                $item = $resaleItem->item;
+                if ($item) {
+                    $item->itemuse = 'Inventory';
+                    $item->save();
+                }
 
-            $resaleItem->resalestatus = 'sold';
+                // Delete the resale item record
+                $resaleItem->delete();
+
+                DB::commit();
+
+                return back()->with('success', 'Bidding stopped. No bids were placed. Item moved back to inventory.');
+            }
+
+            // There is a last bidder - proceed with original logic
+            $resaleItem->resalestatus = 'Sold';
             $resaleItem->save();
-
 
             $item = $resaleItem->item;
             if ($item) {
-                $item->itemuse = 'sold';
+                $item->itemuse = 'Sold';
                 $item->save();
             }
 
-
             $shop = $resaleItem->shop;
             if ($shop) {
-
                 if (is_null($shop->points)) {
                     $shop->points = 0;
                 }
-
                 $shop->points += $resaleItem->currentbid ?? 0;
                 $shop->save();
             }
@@ -346,8 +516,6 @@ class OwnerInterfaceController extends Controller
         }
 
         $shopId = $shop->shopid;
-
-
         $imagePath = $request->file('invitemimage')->store('items/images', 'public');
 
         // Create new item record

@@ -2,16 +2,15 @@
 <html>
 <head>
     <title>CarVault</title>
-    @vite(['resources/css/exploreout.css'])
+    @vite(['resources/css/explore.css'])
 </head>
 <body>
 <form action="{{ route('exploreout.page') }}" method="post">
     @csrf
-
     <div class="whole">
         <div class="upper">
             <div class="headerbox">
-                <div class="left">
+
                     <div class="logobox">
                         <a href="{{ route('login.page') }}">
                             <img class="logo" src="{{ asset('images/websitelogo.PNG') }}" alt="VogueVault Logo">
@@ -30,34 +29,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="searchbarbox">
-                    <div style="display:flex; align-items:center; position:relative;">
-                        <input
-                            class="searchbar"
-                            type="text"
-                            id="searchInput"
-                            name="search"
-                            placeholder="Search for items..."
-                            autocomplete="off"
-                            onkeyup="liveSearch()"
-                        >
-                        <button type="submit"
-                                style="position:absolute; margin-bottom:10px; margin-right:2px; right:0; height:46px; padding:0 15px; border:none; background-color:grey; color:white; border-radius:0 8px 8px 0; cursor:pointer; font-family:Quicksand; font-size:x-large;">
-                            Search
-                        </button>
-                    </div>
-                    <div id="searchResults" style="background-color:white; position:absolute; z-index:999; width:200px; border:5px solid #ccc; border-top:none; max-height:200px; overflow-y:auto;"></div>
-                </div>
 
-                <div class="optionbox">
                     <div class="accountbox">
                         <button class="headerbuttons" name="myaccount">Login</button>
-                    </div>
-                    <div class="cartbox">
                         <button class="headerbuttons" name="cart">SignUp</button>
                     </div>
-                </div>
+
+
             </div>
         </div>
 
@@ -73,12 +51,10 @@
 
             <div class="midbox">
                 <div class="itemshowcase">
-                    <p>items showcase</p>
+                    <h1>Showcase</h1>
 
                     <div class="trending">
-                        <div class="trendingtextbox">
-                            <p>Trending Items</p>
-                        </div>
+
                         <div class="trendingitemsbox">
                             @foreach ($items as $item)
                                 @php
@@ -91,9 +67,8 @@
                                         <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width:100%; height:250px; object-fit:fill;">
                                     </div>
                                     <div class="iteminfo">
-                                        <p>Item Name: {{ $item->itemname }}</p>
-                                        <p>Resale Price: {{ $item->resaleprice }}</p>
-                                        <p>Rental Price: {{ $item->rentalprice }}/day</p>
+                                        <p> {{ $item->itemname }} {{ $item->itemmodel }}</p>
+
                                     </div>
                                 </div>
                             @endforeach
@@ -101,9 +76,7 @@
                     </div>
 
                     <div class="shops">
-                        <div class="shopstextbox">
-                            <p>Popular Shops</p>
-                        </div>
+
                         <div class="popularshopsbox">
                             @foreach ($shops as $shop)
                                 @php
@@ -125,17 +98,10 @@
                             @endforeach
                         </div>
                     </div>
-
-
-
-
-
                 </div>
             </div>
         </div>
     </div>
 </form>
-
-
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 
     <title>Rental Cars</title>
-    @vite(['resources/css/explore.css'])
+    @vite(['resources/css/rental.css'])
 
 
 </head>
@@ -100,11 +100,11 @@
                     </form>
                     <form action="{{ route('rental.navigate') }}" method="POST">
                         @csrf
-                    <button class="maintab" disabled>&#10097 Rental Items</button>
+                    <button class="maintab" disabled>&#10097 Rental Cars</button>
                     </form>
                     <form action="{{ route('rental.navigate') }}" method="POST">
                         @csrf
-                    <button class="maintab" name="resaletab" type="submit">Resale Items</button>
+                    <button class="maintab" name="resaletab" type="submit">Resale Cars</button>
                     </form>
                 </div>
                 <div class="lowersidebarbox">
@@ -142,6 +142,8 @@
                                         <div class="iteminfo">
                                             <p>Item Name: {{ $item->itemname }}</p>
                                             <p>Rental Price: {{ $item->rentalprice }} / Week</p>
+                                        </div>
+                                        <div class="iteminfobuttons">
 
                                             <input type="hidden" name="item_serial" value="{{ $item->itemserial }}">
                                             <input type="hidden" name="shop_id" value="{{ $item->shopid }}">

@@ -19,8 +19,11 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
 
 Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup.page');
 
-
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.perform');
+
+Route::post('/signup/exit', [AuthController::class, 'exit'])->name('signup.exit');
+
+
 
 
 Route::view('/prefer', 'prefer')->name('prefer.page');
@@ -91,10 +94,15 @@ Route::group(['middleware' => ['web']], function () {
     Route::post('/ownerinterface/item/stopbidding', [OwnerInterfaceController::class, 'stopBidding'])->name('ownerinterface.stopbidding');
     Route::post('/ownerinterface/item/edit', [OwnerInterfaceController::class, 'editItem'])->name('ownerinterface.edit');
     Route::post('/ownerinterface/item/backtoshop', [OwnerInterfaceController::class, 'backtoShop'])->name('ownerinterface.backtoshop');
+    Route::get('/customer/{id}/location', [OwnerInterfaceController::class, 'getCustomerLocation']);
 });
 
 
 use App\Http\Controllers\AccountController;
+Route::get('/myaccount', [AccountController::class, 'show'])
+    ->middleware('auth')
+    ->name('myaccount.page');
+
 Route::get('/myaccount', [AccountController::class, 'show'])->name('myaccount.page');
 Route::post('/myaccount/backtoexplore', [AccountController::class, 'backToExplore'])->name('myaccount.backtoexplore');
 
@@ -110,6 +118,12 @@ use App\Http\Controllers\SellRequestController;
 Route::post('/sellingiteminfo', [SellRequestController::class, 'store'])->name('sellingiteminfo.store');
 Route::post('/sellingiteminfo/backtoseller', [SellRequestController::class, 'backToSeller'])->name('sellingiteminfo.backtoseller');
 
+
+use App\Http\Controllers\CartController;
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/pay', [CartController::class, 'pay'])->name('cart.pay');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::post('/cart/backtorental', [CartController::class, 'backToRental'])->name('cart.backtorental');
 
 
 

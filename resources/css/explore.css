@@ -156,7 +156,7 @@ body {
 
     border-radius: 10px;
     border-width: 4px;
-    border-color: rgb(133, 133, 133);
+    border-color: rgb(143, 126, 126);
 
     padding-top: 5px;
     padding-bottom: 10px;
@@ -280,7 +280,7 @@ body {
 
 .midbox {
     display: block;
-    background-color: grey;
+    background-color: #7c7c7c;
 
     width: 100%;
     height: fit-content;
@@ -301,7 +301,7 @@ body {
 
 .trending {
     display: block;
-    background-color: rgb(96, 19, 32);
+    background-color: rgb(62, 62, 62);
     border: solid;
     border-radius: 15px;
     width: 100%;
@@ -311,23 +311,21 @@ body {
 }
 .trendingtextbox {
     display: block;
-    background-color: blue;
+    background-color: #ffffff;
+
 }
 .trendingitemsbox {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 50px;
-
-
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 5px;
     width: 92%;
 }
+
 .item1 {
     display: flex;
     flex-direction: column;
     max-width: 350px;
     min-width: 200px;
-
-
 
     background-color: aliceblue;
     margin: 20px;
@@ -337,24 +335,26 @@ body {
 
 .itempic {
 
+
 }
 
 .iteminfo {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: chocolate;
-
+    background-color: #ffffff;
+    height: 30px;
 
 }
+
 .addtocart{
     width: 100%;
 
 }
 p{
     margin: 0;
-    font-size: small;
-    font-weight: 600;
+    font-size: large;
+    font-weight: 450;
 }
 
 
@@ -363,7 +363,7 @@ p{
 
 .shops {
     display: block;
-    background-color: rgb(96, 19, 32);
+    background-color: rgb(0, 0, 0);
     border: solid;
     border-radius: 15px;
     width: 100%;
@@ -371,12 +371,13 @@ p{
     margin-bottom: 20px;
 }
 .shopstextbox {
-    background-color: blue;
+    background-color: #ffffff;
+
 }
 .popularshopsbox {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 50px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 10px;
     width: 95%;
 }
 .shop1 {
@@ -384,8 +385,6 @@ p{
     flex-direction: column;
     max-width: 250px;
     min-width: 200px;
-
-
 
     background-color: aliceblue;
     margin: 20px;
@@ -399,7 +398,8 @@ p{
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    background-color: red;
+    background-color: #ffffff;
+    height: 30px;
     width: 100%;
 
 
@@ -409,7 +409,7 @@ p{
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: red;
+    background-color: #ffffff;
     width: 100%;
 
 }
@@ -426,7 +426,7 @@ p{
 
 .resales {
     display: block;
-    background-color: rgb(96, 19, 32);
+    background-color: rgb(0, 0, 0);
     border: solid;
     border-radius: 15px;
     width: 100%;
@@ -435,7 +435,7 @@ p{
 
 }
 .resaletextbox {
-    background-color: blue;
+    background-color: #ffffff;
 }
 .resaleitemsbox {
     display: grid;
@@ -452,7 +452,7 @@ p{
 
 .rentals {
     display: block;
-    background-color: rgb(96, 19, 32);
+    background-color: rgb(0, 0, 0);
     border: solid;
     border-radius: 15px;
     width: 100%;
@@ -460,7 +460,7 @@ p{
     margin-bottom: 20px;
 }
 .rentaltextbox {
-    background-color: blue;
+    background-color: #ffffff;
 }
 .rentalitemsbox {
     display: grid;

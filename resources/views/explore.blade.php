@@ -57,9 +57,7 @@
                     <div class="accountbox">
                         <button class="headerbuttons" name="myaccount">My Account</button>
                     </div>
-                    <div class="cartbox">
-                        <button class="headerbuttons" name="cart">Cart</button>
-                    </div>
+
                 </div>
             </div>
         </div>

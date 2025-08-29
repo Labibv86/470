@@ -15,6 +15,8 @@ export default defineConfig({
                 'resources/css/signinginfo.css',
                 'resources/css/exploreout.css',
                 'resources/css/resale.css',
+                'resources/css/rental.css',
+                'resources/css/cart.css',
                 'resources/css/seller.css',
                 'resources/css/ownershopsetup.css',
                 'resources/css/ownerinterface.css',

@@ -31,7 +31,7 @@ h2{
 
 .add-items-section{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     border: solid 3px grey;
     border-radius: 10px;
@@ -133,7 +133,7 @@ p{
 
 
 .sellreqbutton {
-    width: 150px;
+    width: 100%;
     height: 30px;
 }
 
@@ -150,7 +150,9 @@ p{
 
 
 }
-
+.item-card{
+    width: fit-content;
+}
 
 
 .edit-dropdown {
@@ -159,7 +161,11 @@ p{
 
 
 }
-
+.toggle-edit-btn{
+    width: 100%;
+    height: 30px;
+    margin: 0px;
+}
 .edit-dropdown-content {
     display: node;
     position: absolute;
@@ -202,4 +208,31 @@ p{
 }
 p{
     font-family: Quicksand;
+}
+
+.customer-info-btn{
+    width: 100%;
+
+}
+.customer-info-container {
+    position: relative;
+    display: inline-block;
+}
+
+.customer-info-container:hover .customer-info-tooltip {
+    display: block;
+    width: fit-content;
+}
+
+.customer-info-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+    z-index: 1000;
 }

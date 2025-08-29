@@ -77,12 +77,7 @@
                         <button class="headerbuttons" name="myaccount">My Account</button>
                         </form>
                     </div>
-                    <div class="cartbox">
-                        <form action="{{ route('resale.action') }}" method="post">
-                            @csrf
-                        <button class="headerbuttons" name="cart">Cart</button>
-                        </form>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -97,11 +92,11 @@
                         </form>
                         <form action="{{ route('resale.action') }}" method="POST">
                             @csrf
-                        <button class="maintab" name="rentaltab">Rental Items</button>
+                        <button class="maintab" name="rentaltab">Rental Cars</button>
                         </form>
                         <form action="{{ route('resale.action') }}" method="POST">
                             @csrf
-                        <button class="maintab" name="resaletab" type="submit">&#10097 Resale Items</button>
+                        <button class="maintab" name="resaletab" type="submit">&#10097 Resale Cars</button>
                         </form>
                     </div>
                     <div class="lowersidebarbox">
@@ -138,9 +133,8 @@
                                         </div>
                                         <div class="iteminfo">
                                             <p>Item Name: {{ $item->itemname }}</p>
-                                            <p>Bidding Price: {{ $item->resaleprice }} BDT</p>
-                                        </div>
-                                        <div class="iteminfobuttons">
+                                            <p>Current Bid: {{ $item->resaleprice }} BDT</p>
+
                                             <input class="setbid" type="number" name="setbid" min="{{ $item->resaleprice + 1 }}" placeholder="Enter Your Bid" />
                                             <input type="hidden" name="item_serial" value="{{ $item->itemserial }}">
                                             <button class="addtocart" name="bid" type="submit">Bid</button>

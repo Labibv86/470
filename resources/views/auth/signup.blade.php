@@ -9,17 +9,19 @@
     @vite(['resources/css/signinginfo.css'])
 </head>
 <body>
+<div class="header" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+    <form action="{{ route('signup.exit') }}" method="POST" style="display:inline;">
+        @csrf
+        <input type="image" src="{{ asset('images/back.png') }}" alt="Back" style="width: 40px; height: 40px;">
+    </form>
+</div>
 
-<form action="{{ route('signup.perform') }}" method="POST">
     @csrf
 
     <div class="whole">
-        <div class="header" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
-            <a href="{{ route('login.page') }}">
-                <button class="backtorental" type="button" style="width: 100px; height: 30px; border: solid 2px grey; border-radius: 5px; cursor: pointer; font-size: large;">Exit</button>
-            </a>
-        </div>
 
+
+        <form action="{{ route('signup.perform') }}" method="POST">
         <div class="linebox">
             <p class="p1">Create your account</p>
         </div>
@@ -65,8 +67,9 @@
         <div class="nextbox">
             <button class="next" type="submit" name="next">Next</button>
         </div>
+        </form>
     </div>
-</form>
+
 
 </body>
 </html>

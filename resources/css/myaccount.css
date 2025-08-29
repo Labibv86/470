@@ -25,6 +25,9 @@ h1 {
 
 }
 
+
+
+
 .items p{
     display: flex;
     flex-direction: column;
@@ -33,12 +36,15 @@ h1 {
     width: fit-content;
     margin: 0;
 
+    font-size: small;
+
 
 
 }
 .sellitems{
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 50px;
     width: 100%;
 
 
@@ -49,6 +55,28 @@ h1 {
     border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
 
+}
+
+ .customer-info-container {
+     position: relative;
+     display: inline-block;
+ }
+
+.customer-info-container:hover .customer-info-tooltip {
+    display: block;
+}
+
+.customer-info-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: 200px;
+    z-index: 1000;
 }
 
 
@@ -84,19 +112,14 @@ h1 {
 }
 .trendingitemsbox {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 50px;
-
-    width: 92%;
+    width: 100%;
 }
 .item1 {
     display: flex;
     flex-direction: column;
-    max-width: 350px;
-    min-width: 200px;
-
-
-
+    width: 350px;
 
     margin: 20px;
     border: solid;
@@ -111,9 +134,7 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-
     width: 100%;
-
 
 }
 
