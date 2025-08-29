@@ -4,10 +4,10 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Use Node 20 with exact version
-FROM node:20.12.2 AS frontend-stage  # ← Specific version
+FROM node:20.12.2 AS frontend-stage
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --no-cache  # ← Disable npm cache
+RUN npm install --no-cache  #
 COPY . .
 RUN npm run build
 
