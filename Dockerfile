@@ -11,7 +11,7 @@ RUN a2enmod rewrite
 
 # Copy application files
 COPY --from=build-stage /app .
-COPY ./.htaccess /var/www/html/public/.htaccess
+COPY public/.htaccess /var/www/html/public/.htaccess
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html/storage
