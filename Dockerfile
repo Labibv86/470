@@ -6,12 +6,23 @@ RUN composer install --no-dev --optimize-autoloader
 FROM php:8.2-apache
 WORKDIR /var/www/html
 
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql
+
 # Enable Apache rewrite module
 RUN a2enmod rewrite
 
+# Set Apache document root to public folder
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
 # Copy application files
 COPY --from=build-stage /app .
-COPY public/.htaccess /var/www/html/public/.htaccess
 
 # Set proper permissions
-RUN chown -R www-data:www-data /var/www/html/storage
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+
+# Expose port
+EXPOSE 80
