@@ -4,7 +4,7 @@ COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
 # Add Node.js stage
-FROM node:18 AS frontend-stage
+FROM node:20 AS frontend-stage
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
