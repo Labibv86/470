@@ -3,11 +3,11 @@ WORKDIR /app
 COPY . .
 RUN composer install --no-dev --optimize-autoloader
 
-# Add Node.js stage
-FROM node:20 AS frontend-stage
+# Use Node 20 with exact version
+FROM node:20.12.2 AS frontend-stage  # ← Specific version
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --no-cache  # ← Disable npm cache
 COPY . .
 RUN npm run build
 
