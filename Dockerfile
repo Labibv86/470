@@ -11,7 +11,6 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-
 FROM php:8.2-apache
 WORKDIR /var/www/html
 
@@ -28,10 +27,19 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # Copy application files from build stages
 COPY --from=build-stage /app .
+
+# COPY THE ENTIRE BUILD DIRECTORY CORRECTLY
 COPY --from=frontend-stage /app/public/build/ /var/www/html/public/build/
 
-# Set proper permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
-RUN chmod -R 775 storage bootstrap/cache
+# Set proper permissions for build directory too
+RUN chown -R www-data:www-data storage bootstrap/cache public/build
+RUN chmod -R 775 storage bootstrap/cache public/build
+
+# Add Apache configuration for build directory
+RUN echo '<Directory "/var/www/html/public/build">' >> /etc/apache2/apache2.conf
+RUN echo '    Options Indexes FollowSymLinks' >> /etc/apache2/apache2.conf
+RUN echo '    AllowOverride None' >> /etc/apache2/apache2.conf
+RUN echo '    Require all granted' >> /etc/apache2/apache2.conf
+RUN echo '</Directory>' >> /etc/apache2/apache2.conf
 
 EXPOSE 80
