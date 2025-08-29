@@ -35,6 +35,8 @@ COPY --from=frontend-stage /app/public/build/ /var/www/html/public/build/
 RUN chown -R www-data:www-data storage bootstrap/cache public/build
 RUN chmod -R 775 storage bootstrap/cache public/build
 
+RUN if [ ! -z "$DATABASE_URL" ]; then php artisan migrate --force; fi
+
 # Add Apache configuration for build directory
 RUN echo '<Directory "/var/www/html/public/build">' >> /etc/apache2/apache2.conf
 RUN echo '    Options Indexes FollowSymLinks' >> /etc/apache2/apache2.conf
