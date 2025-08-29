@@ -3,7 +3,8 @@
 <head>
     <title>Login or Sign up</title>
 
-    @vite(['resources/css/login.css'])
+{{--    @vite(['resources/css/login.css'])--}}
+    <link href="{{ asset('build/assets/login.css') }}" rel="stylesheet">
 </head>
 
 <body>
