@@ -3,7 +3,8 @@
 <head>
 
     <title>Rental Cars</title>
-    @vite(['resources/css/rental.css'])
+{{--    @vite(['resources/css/rental.css'])--}}
+    <link href="/resources/css/rental.css" rel="stylesheet">
 
 
 </head>

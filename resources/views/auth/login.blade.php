@@ -3,7 +3,7 @@
 <head>
     <title>Login or Sign up</title>
 
-{{--    @vite(['resources/css/login.css', 'resources/js/app.js'])--}}
+{{--  @vite(['public//login.css'])--}}
     <link href="/resources/css/login.css" rel="stylesheet">
 </head>
 

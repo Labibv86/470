@@ -2,7 +2,10 @@
 <html>
 <head>
     <title>VogueVault</title>
-    @vite(['resources/css/resale.css'])
+{{--    @vite(['resources/css/resale.css'])--}}
+    <link href="/resources/css/rental.css" rel="stylesheet">
+
+
 </head>
 <body>
 

@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>Sell Your Car</title>
-    @vite(['resources/css/sellingiteminfo.css'])
+{{--    @vite(['resources/css/sellingiteminfo.css'])--}}
+    <link href="/resources/css/sellingiteminfo.css" rel="stylesheet">
+
 </head>
 <body>
 

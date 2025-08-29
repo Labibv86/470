@@ -6,7 +6,8 @@
 
     <title>Sign Up</title>
 
-    @vite(['resources/css/signinginfo.css'])
+{{--    @vite(['resources/css/signinginfo.css'])--}}
+    <link href="/resources/css/signinginfo.css" rel="stylesheet">
 </head>
 <body>
 <div class="header" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">

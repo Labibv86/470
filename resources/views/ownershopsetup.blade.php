@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>Setup Shop</title>
-    @vite(['resources/css/ownershopsetup.css'])
+{{--    @vite(['resources/css/ownershopsetup.css'])--}}
+    <link href="/resources/css/ownershopsetup.css" rel="stylesheet">
+
 
 </head>
 <body>

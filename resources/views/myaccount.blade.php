@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>My Account</title>
-    @vite(['resources/css/myaccount.css'])
+{{--    @vite(['resources/css/myaccount.css'])--}}
+    <link href="/resources/css/myaccount.css" rel="stylesheet">
+
 </head>
 <body>
 

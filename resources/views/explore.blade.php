@@ -2,7 +2,9 @@
 <html>
 <head>
     <title>CarVault</title>
-    @vite(['resources/css/explore.css'])
+{{--    @vite(['resources/css/explore.css'])--}}
+    <link href="/resources/css/explore.css" rel="stylesheet">
+
 </head>
 <body>
 <form action="{{ route('explore.page') }}" method="post">

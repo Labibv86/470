@@ -3,7 +3,9 @@
 <head>
     <title>Preference</title>
 
-    @vite(['resources/css/prefer.css'])
+{{--    @vite(['resources/css/prefer.css'])--}}
+    <link href="/resources/css/prefer.css" rel="stylesheet">
+
 </head>
 <body>
 
