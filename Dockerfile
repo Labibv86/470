@@ -44,4 +44,6 @@ RUN echo '    AllowOverride None' >> /etc/apache2/apache2.conf
 RUN echo '    Require all granted' >> /etc/apache2/apache2.conf
 RUN echo '</Directory>' >> /etc/apache2/apache2.conf
 
+RUN echo 'Alias /build /var/www/html/public/build' >> /etc/apache2/apache2.conf
+
 EXPOSE 80

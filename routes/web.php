@@ -6,6 +6,16 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
+Route::get('/debug-assets', function() {
+    return response()->json([
+        'build_dir' => file_exists(public_path('build')),
+        'assets_dir' => file_exists(public_path('build/assets')),
+        'css_files' => file_exists(public_path('build/assets')) ?
+            array_filter(scandir(public_path('build/assets')), fn($f) => str_contains($f, '.css')) : [],
+        'manifest' => file_exists(public_path('build/manifest.json')) ?
+            json_decode(file_get_contents(public_path('build/manifest.json')), true) : null
+    ]);
+});
 
 Route::get('/', fn() => redirect()->route('login.page'));
 
@@ -47,6 +57,7 @@ Route::get('/dashboard', fn() => 'Logged in')->name('dashboard');
 
 
 Route::match(['get', 'post'], '/exploreout', [ExploreOutController::class, 'index'])->name('exploreout.page');
+
 
 
 ///////////////////////////////////////Prefer////////////////////////////////////////////
