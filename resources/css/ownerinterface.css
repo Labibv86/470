@@ -128,7 +128,7 @@ p{
 
 .toggle-edit-btn{
     width: 100%;
-    height: 30px%;
+    height: 30px;
 }
 
 
@@ -167,7 +167,7 @@ p{
     margin: 0px;
 }
 .edit-dropdown-content {
-    display: node;
+    display: none;
     position: absolute;
     background-color: black;
     width: 160px;
