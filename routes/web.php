@@ -6,6 +6,19 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
+Route::get('/test-supabase-upload', function() {
+    // Create a test image
+    $testImage = storage_path('app/test.jpg');
+    file_put_contents($testImage, base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD//gA+...'));
+
+    $storage = new App\Services\SupabaseStorageService();
+    $url = $storage->uploadImage(new Illuminate\Http\UploadedFile($testImage, 'test.jpg'));
+
+    unlink($testImage);
+
+    return $url ? '<img src="'.$url.'" style="max-width: 300px;">' : 'Upload failed';
+});
+
 Route::get('/debug-assets', function() {
     return response()->json([
         'build_dir' => file_exists(public_path('build')),

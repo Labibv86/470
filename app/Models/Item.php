@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 class Item extends Model
 {
     protected $table = 'items';
@@ -46,5 +47,20 @@ class Item extends Model
     public function resaleItems()
     {
         return $this->hasMany(ResaleItem::class, 'itemid', 'itemserial');
+    }
+    public function getImageUrlAttribute()
+    {
+        // If it's already a full URL (Supabase), return it directly
+        if ($this->itemimage && filter_var($this->itemimage, FILTER_VALIDATE_URL)) {
+            return $this->itemimage;
+        }
+
+        // If it's a local path, generate the storage URL
+        if ($this->itemimage) {
+            return Storage::disk('public')->url($this->itemimage);
+        }
+
+        // Fallback to default image
+        return asset('images/default-item.png');
     }
 }

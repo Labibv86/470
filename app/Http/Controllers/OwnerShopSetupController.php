@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
+use App\Services\SupabaseStorageService;
 
 class OwnerShopSetupController extends Controller
 {
@@ -24,7 +25,6 @@ class OwnerShopSetupController extends Controller
 
     public function register(Request $request)
     {
-
         $request->validate([
             'shopname'       => 'required|string|max:255',
             'shopemail'      => 'required|email|unique:shops,shopemail',
@@ -36,34 +36,39 @@ class OwnerShopSetupController extends Controller
             'shoplogo'       => 'required|image|max:2048',
         ]);
 
-
         $owner = User::where('email', $request->owneremail)->first();
 
         if (!$owner) {
             return back()->withErrors(['owneremail' => 'Owner email does not exist'])->withInput();
         }
 
-        // Store uploaded image on disk (recommended best practice)
-        if ($request->hasFile('shoplogo') && $request->file('shoplogo')->isValid()) {
-            $path = $request->file('shoplogo')->store('shoplogos', 'public');
-        } else {
-            return back()->withErrors(['shoplogo' => 'Invalid or missing shop logo'])->withInput();
+        try {
+            // UPLOAD TO SUPABASE - CHANGED THIS PART
+            $storageService = new SupabaseStorageService();
+            $logoUrl = $storageService->uploadImage($request->file('shoplogo'), 'shop-logos');
+
+            if (!$logoUrl) {
+                throw new \Exception('Failed to upload shop logo. Please try again.');
+            }
+
+            // Create shop with Supabase URL
+            Shop::create([
+                'shopname'     => $request->shopname,
+                'shopemail'    => $request->shopemail,
+                'shoppassword' => $request->shoppassword,
+                'shopphone'    => $request->shopphone,
+                'license'      => $request->license,
+                'officeaddress'=> $request->officeaddress,
+                'shoplogo'     => $logoUrl, // STORE URL NOW, NOT PATH
+                'userid'       => $owner->userid,
+                'points'       => 100000000,
+            ]);
+
+            return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
         }
-
-
-        Shop::create([
-            'shopname'     => $request->shopname,
-            'shopemail'    => $request->shopemail,
-            'shoppassword' => $request->shoppassword,
-            'shopphone'    => $request->shopphone,
-            'license'      => $request->license,
-            'officeaddress'=> $request->officeaddress,
-            'shoplogo'     => $path,
-            'userid'       => $owner->userid,
-            'points'       => 100000000,
-        ]);
-
-        return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
     }
 
     public function loginToShop(Request $request)

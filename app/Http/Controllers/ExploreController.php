@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Shop;
 use App\Models\Item;
+use App\Services\SupabaseStorageService;
 
 class ExploreController extends Controller
 {

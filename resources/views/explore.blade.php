@@ -83,9 +83,7 @@
                         <div class="trendingitemsbox">
                             @foreach($items_general as $item)
                                 @php
-                                    $imageSrc = $item->itemimage
-                                        ? asset('storage/' . $item->itemimage)
-                                        : asset('images/default-item.png');
+                                    $imageSrc = $item->image_url
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
@@ -104,9 +102,8 @@
                         <div class="trendingitemsbox">
                             @foreach($items_resale as $item)
                                 @php
-                                    $imageSrc = $item->itemimage
-                                        ? asset('storage/' . $item->itemimage)
-                                        : asset('images/default-item.png');
+                                    $imageSrc = $item->image_url
+
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
@@ -125,9 +122,8 @@
                         <div class="trendingitemsbox">
                             @foreach($items_rental as $item)
                                 @php
-                                    $imageSrc = $item->itemimage
-                                        ? asset('storage/' . $item->itemimage)
-                                        : asset('images/default-item.png');
+                                    $imageSrc = $item->image_url
+
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
@@ -146,9 +142,7 @@
                         <div class="popularshopsbox">
                             @foreach($shops as $shop)
                                 @php
-                                    $imageSrc = $shop->shoplogo
-                                        ? asset('storage/' . $shop->shoplogo)
-                                        : asset('images/default-shop-logo.png');
+                                    $imageSrc = $shop->logo_url;
                                 @endphp
                                 <div class="shop1">
                                     <div class="shoppic">

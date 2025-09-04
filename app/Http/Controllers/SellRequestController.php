@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Models\SellRequest;
-
-
 use App\Models\UserSellRecord;
-
-use Illuminate\Support\Facades\Storage;
+use App\Services\SupabaseStorageService; // Add this
 
 class SellRequestController extends Controller
 {
@@ -21,6 +18,7 @@ class SellRequestController extends Controller
         }
         return view('sellingiteminfo', compact('shopid'));
     }
+
     public function backToSeller()
     {
         return redirect()->route('seller.page');
@@ -37,32 +35,44 @@ class SellRequestController extends Controller
             'askingprice'   => 'required|numeric|min:0',
             'itemimage'     => 'required|image|max:2048',
         ]);
-        $shopID = session('selected_shop_id');
 
+        $shopID = session('selected_shop_id');
         $userID = session('userid');
 
         if (!$shopID || !$userID) {
             return redirect()->route('seller.page')->withErrors('Shop or user session missing.');
         }
 
-        $itemImagePath = $request->file('itemimage')->store('sellrequests/images', 'public');
-        $itemMemoPath = null;
+        try {
+            // Upload to Supabase - SIMPLE!
+            $storageService = new SupabaseStorageService();
+            $imageUrl = $storageService->uploadImage($request->file('itemimage'));
 
-        $sellRequest = SellRequest::create([
-            'shopid'          => $shopID,       // lowercase
-            'itemname'        => $request->name,
-            'itemmodel'       => $request->model,
-            'itemcategory'    => $request->category,
-            'itemdescription' => $request->description,
-            'originalprice'   => $request->originalprice,
-            'askingprice'     => $request->askingprice,
-            'itemimage'       => $itemImagePath,
-            'itemstatus'      => 'pending',
-        ]);
-        UserSellRecord::create([
-            'userid'             => $userID,
-            'sellrequestserial'  => $sellRequest->serial,
-        ]);
-        return redirect()->route('prefer.page')->with('success', 'Sell request submitted successfully.');
+            if (!$imageUrl) {
+                throw new \Exception('Failed to upload image to storage. Please try again.');
+            }
+
+            $sellRequest = SellRequest::create([
+                'shopid'          => $shopID,
+                'itemname'        => $request->name,
+                'itemmodel'       => $request->model,
+                'itemcategory'    => $request->category,
+                'itemdescription' => $request->description,
+                'originalprice'   => $request->originalprice,
+                'askingprice'     => $request->askingprice,
+                'itemimage'       => $imageUrl, // Store the URL now!
+                'itemstatus'      => 'pending',
+            ]);
+
+            UserSellRecord::create([
+                'userid'             => $userID,
+                'sellrequestserial'  => $sellRequest->serial,
+            ]);
+
+            return redirect()->route('prefer.page')->with('success', 'Sell request submitted successfully.');
+
+        } catch (\Exception $e) {
+            return back()->withErrors('Error: ' . $e->getMessage())->withInput();
+        }
     }
 }

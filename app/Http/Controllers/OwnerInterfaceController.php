@@ -13,6 +13,7 @@ use App\Models\RentalItem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\SupabaseStorageService; // Add this
 
 
 class OwnerInterfaceController extends Controller
@@ -102,29 +103,6 @@ class OwnerInterfaceController extends Controller
 }
 
 
-//    public function getCustomerLocation($id)
-//    {
-//        $customer = User::find($id);
-//
-//        if (!$customer || !$customer->address) {
-//            return response()->json([
-//                'error' => 'Customer address not found'
-//            ], 404);
-//        }
-//
-//
-//        $rentedrentalItems = RentalItem::where('renterid', $id)->get(['rentdate', 'returndate']);
-//
-//        return response()->json([
-//            'name' => $customer->firstname . ' ' . $customer->lastname,
-//            'id' => $customer->userid,
-//            'email' => $customer->email,
-//            'phone' => $customer->phone,
-//            'address' => $customer->address,
-//            'rentedrentalItems' => $rentedrentalItems
-//        ]);
-//    }
-
 
     public function dropItem(Request $request)
     {
@@ -150,9 +128,19 @@ class OwnerInterfaceController extends Controller
             // Delete from rentalitems table
             RentalItem::where('itemid', $item->itemserial)->delete();
 
-            // Delete the image file if it exists
-            if ($item->itemimage && Storage::disk('public')->exists($item->itemimage)) {
-                Storage::disk('public')->delete($item->itemimage);
+            // DELETE IMAGE FROM SUPABASE - UPDATED THIS PART
+            if ($item->itemimage) {
+                $storageService = new SupabaseStorageService();
+
+                // Check if it's a Supabase URL (not a local path)
+                if (filter_var($item->itemimage, FILTER_VALIDATE_URL)) {
+                    $storageService->deleteImage($item->itemimage);
+                } else {
+                    // Fallback: delete from local storage if it's an old local path
+                    if (Storage::disk('public')->exists($item->itemimage)) {
+                        Storage::disk('public')->delete($item->itemimage);
+                    }
+                }
             }
 
             // Delete the item itself
@@ -434,7 +422,6 @@ class OwnerInterfaceController extends Controller
 
 
     public function editItem(Request $request)
-
     {
         \Log::info('EditItem Request Data:', $request->all());
 
@@ -454,48 +441,54 @@ class OwnerInterfaceController extends Controller
             'edititemimage'    => 'nullable|image|max:2048',
         ]);
 
-
         $item = Item::findOrFail($request->item_serial);
         \Log::info('Found item:', ['itemserial' => $item->itemserial]);
 
-
-        if ($request->hasFile('edititemimage')) {
-
-            if ($item->itemimage && Storage::disk('public')->exists($item->itemimage)) {
-                Storage::disk('public')->delete($item->itemimage);
-            }
-            $path = $request->file('edititemimage')->store('items/images', 'public');
-            $item->itemimage = $path;
-        }
-
-
-        if ($request->has('edititemname')) {
-            $item->itemname = $request->edititemname;
-        }
-
-
-        $item->itemmodel       = $request->input('edititemmodel');
-        $item->itemcategory    = $request->input('edititemcategory');
-        $item->itemstatus      = $request->input('edititemstatus');
-        $item->itemcondition   = $request->input('edititemcondition');
-        $item->itemgender      = $request->input('edititemgender');
-        $item->itemdescription = $request->input('edititemdescription');
-        $item->resaleprice     = $request->input('editresaleprice');
-        $item->rentalprice     = $request->input('editrentalprice');
-        $item->biddingprice    = $request->input('editbiddingprice');
-        $item->totalcopies     = $request->input('edittotalcopies');
-
         try {
+            // Handle image upload - UPDATED FOR SUPABASE
+            if ($request->hasFile('edititemimage')) {
+                $storageService = new SupabaseStorageService();
+
+                // Delete old image from Supabase if it exists
+                if ($item->itemimage && filter_var($item->itemimage, FILTER_VALIDATE_URL)) {
+                    $storageService->deleteImage($item->itemimage);
+                }
+
+                // Upload new image to Supabase
+                $imageUrl = $storageService->uploadImage($request->file('edititemimage'), 'item-images');
+
+                if (!$imageUrl) {
+                    throw new \Exception('Failed to upload new image to storage.');
+                }
+
+                $item->itemimage = $imageUrl;
+            }
+
+            // Update other fields
+            if ($request->has('edititemname')) {
+                $item->itemname = $request->edititemname;
+            }
+
+            $item->itemmodel       = $request->input('edititemmodel', $item->itemmodel);
+            $item->itemcategory    = $request->input('edititemcategory', $item->itemcategory);
+            $item->itemstatus      = $request->input('edititemstatus', $item->itemstatus);
+            $item->itemcondition   = $request->input('edititemcondition', $item->itemcondition);
+            $item->itemgender      = $request->input('edititemgender', $item->itemgender);
+            $item->itemdescription = $request->input('edititemdescription', $item->itemdescription);
+            $item->resaleprice     = $request->input('editresaleprice', $item->resaleprice);
+            $item->rentalprice     = $request->input('editrentalprice', $item->rentalprice);
+            $item->biddingprice    = $request->input('editbiddingprice', $item->biddingprice);
+            $item->totalcopies     = $request->input('edittotalcopies', $item->totalcopies);
+
             $item->save();
             \Log::info('Item saved successfully.');
+
+            return back()->with('success', 'Item Information Updated!');
+
         } catch (\Exception $e) {
             \Log::error('Error saving item: ' . $e->getMessage());
-            return back()->withErrors('Error saving item.');
+            return back()->withErrors('Error saving item: ' . $e->getMessage());
         }
-
-
-        return back()->with('success', 'Item Information Updated!');
-
     }
 
     public function logout(Request $request)
@@ -522,7 +515,6 @@ class OwnerInterfaceController extends Controller
             'invitemimage'   => 'required|image|max:2048',
         ]);
 
-
         $shopemail = Session::get('shopemail');
         $shop = Shop::where('shopemail', $shopemail)->first();
 
@@ -531,35 +523,40 @@ class OwnerInterfaceController extends Controller
         }
 
         $shopId = $shop->shopid;
-        $imagePath = $request->file('invitemimage')->store('items/images', 'public');
-
-        // Create new item record
-        $item = new Item();
-        $item->shopid          = $shopId;
-        $item->itemname        = $request->input('itemname');
-        $item->itemmodel       = $request->input('itemmodel');
-        $item->itemcategory    = $request->input('itemcategory');
-        $item->itemstatus      = $request->input('itemstatus');
-        $item->itemcondition   = $request->input('itemcondition');
-        $item->itemgender      = $request->input('itemgender');
-        $item->itemdescription = $request->input('itemdescription');
-        $item->resaleprice     = $request->input('resaleprice');
-        $item->rentalprice     = $request->input('rentalprice');
-        $item->biddingprice    = $request->input('biddingprice');
-        $item->totalcopies     = $request->input('totalcopies');
-        $item->itemimage       = $imagePath;
-        $item->itemuse         = 'Inventory';
 
         try {
-            $item->save();
-        } catch (\Exception $e) {
-            if (Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
+            // UPLOAD TO SUPABASE - CHANGED THIS PART
+            $storageService = new SupabaseStorageService();
+            $imageUrl = $storageService->uploadImage($request->file('invitemimage'), 'item-images');
+
+            if (!$imageUrl) {
+                throw new \Exception('Failed to upload image to storage. Please try again.');
             }
+
+            // Create new item record
+            $item = new Item();
+            $item->shopid          = $shopId;
+            $item->itemname        = $request->input('itemname');
+            $item->itemmodel       = $request->input('itemmodel');
+            $item->itemcategory    = $request->input('itemcategory');
+            $item->itemstatus      = $request->input('itemstatus');
+            $item->itemcondition   = $request->input('itemcondition');
+            $item->itemgender      = $request->input('itemgender');
+            $item->itemdescription = $request->input('itemdescription');
+            $item->resaleprice     = $request->input('resaleprice');
+            $item->rentalprice     = $request->input('rentalprice');
+            $item->biddingprice    = $request->input('biddingprice');
+            $item->totalcopies     = $request->input('totalcopies');
+            $item->itemimage       = $imageUrl; // STORE URL NOW, NOT PATH
+            $item->itemuse         = 'Inventory';
+
+            $item->save();
+
+            return redirect()->back()->with('success', 'Item added to inventory successfully!');
+
+        } catch (\Exception $e) {
             return redirect()->back()->withErrors('Failed to add item: ' . $e->getMessage());
         }
-
-        return redirect()->back()->with('success', 'Item added to inventory successfully!');
     }
 
 }
