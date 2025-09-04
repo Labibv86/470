@@ -6,72 +6,32 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
-
-// Test shop-logos bucket
-Route::get('/test-shop-logos', function() {
-    $storage = new App\Services\SupabaseStorageService();
-    $testImage = create_test_image(); // Your test image function
-    $url = $storage->uploadImage($testImage, 'shop-logos');
-    return $url ? 'Shop logos working: ' . $url : 'Failed';
+Route::get('/test-env', function() {
+    return [
+        'SUPABASE_PROJECT_URL' => env('SUPABASE_PROJECT_URL'),
+        'SUPABASE_API_KEY' => env('SUPABASE_API_KEY') ? 'SET (' . strlen(env('SUPABASE_API_KEY')) . ' chars)' : 'NOT SET',
+        'APP_ENV' => env('APP_ENV')
+    ];
 });
 
-// Test images bucket
-Route::get('/test-images', function() {
-    $storage = new App\Services\SupabaseStorageService();
-    $testImage = create_test_image(); // Your test image function
-    $url = $storage->uploadImage($testImage, 'images');
-    return $url ? 'Images bucket working: ' . $url : 'Failed';
-});
+Route::get('/test-supabase-connect', function() {
+    $projectUrl = env('SUPABASE_PROJECT_URL');
+    $apiKey = env('SUPABASE_API_KEY');
 
-Route::get('/test-supabase-connection', function() {
     try {
-        $projectUrl = env('SUPABASE_PROJECT_URL');
-        $apiKey = env('SUPABASE_API_KEY');
+        $response = Http::timeout(10)->withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+        ])->get("{$projectUrl}/storage/v1/bucket");
 
         return [
-            'project_url' => $projectUrl,
-            'api_key_exists' => !empty($apiKey),
-            'api_key_length' => strlen($apiKey),
-            'env_loaded' => app()->environment(),
+            'status' => $response->status(),
+            'buckets' => $response->successful() ? $response->json() : 'Error: ' . $response->body()
         ];
-
     } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
+        return ['error' => $e->getMessage()];
     }
 });
 
-Route::get('/test-supabase-upload', function() {
-    // Create a test image
-    $testImage = storage_path('app/test.jpg');
-    file_put_contents($testImage, base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD//gA+...'));
-
-    $storage = new App\Services\SupabaseStorageService();
-    $url = $storage->uploadImage(new Illuminate\Http\UploadedFile($testImage, 'test.jpg'));
-
-    unlink($testImage);
-
-    return $url ? '<img src="'.$url.'" style="max-width: 300px;">' : 'Upload failed';
-});
-
-Route::get('/debug-assets', function() {
-    return response()->json([
-        'build_dir' => file_exists(public_path('build')),
-        'assets_dir' => file_exists(public_path('build/assets')),
-        'css_files' => file_exists(public_path('build/assets')) ?
-            array_filter(scandir(public_path('build/assets')), fn($f) => str_contains($f, '.css')) : [],
-        'manifest' => file_exists(public_path('build/manifest.json')) ?
-            json_decode(file_get_contents(public_path('build/manifest.json')), true) : null
-    ]);
-});
-
-// web.php
-Route::get('/test-url', function() {
-    return [
-        'url' => url('/test'),
-        'route' => route('home'),
-        'secure_url' => secure_url('/test')
-    ];
-});
 
 Route::get('/', fn() => redirect()->route('login.page'));
 
