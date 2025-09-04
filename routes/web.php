@@ -17,6 +17,15 @@ Route::get('/debug-assets', function() {
     ]);
 });
 
+// web.php
+Route::get('/test-url', function() {
+    return [
+        'url' => url('/test'),
+        'route' => route('home'),
+        'secure_url' => secure_url('/test')
+    ];
+});
+
 Route::get('/', fn() => redirect()->route('login.page'));
 
 
