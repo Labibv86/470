@@ -2,9 +2,13 @@
 <html>
 <head>
     <title>Login or Sign up</title>
-
+    @if(env('APP_ENV') === 'local')
+        @vite(['resources/css/login.css'])
+    @else
+        <link href="/css/login.css" rel="stylesheet">
+    @endif
 {{--  @vite(['public//login.css'])--}}
-    <link href="/css/login.css" rel="stylesheet">
+{{--    <link href="/css/login.css" rel="stylesheet">--}}
 </head>
 
 <body>
