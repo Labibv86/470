@@ -455,7 +455,7 @@ class OwnerInterfaceController extends Controller
                 }
 
                 // Upload new image to Supabase
-                $imageUrl = $storageService->uploadImage($request->file('edititemimage'), 'item-images');
+                $imageUrl = $storageService->uploadImage($request->file('edititemimage'), 'images');
 
                 if (!$imageUrl) {
                     throw new \Exception('Failed to upload new image to storage.');
@@ -527,7 +527,7 @@ class OwnerInterfaceController extends Controller
         try {
             // UPLOAD TO SUPABASE - CHANGED THIS PART
             $storageService = new SupabaseStorageService();
-            $imageUrl = $storageService->uploadImage($request->file('invitemimage'), 'item-images');
+            $imageUrl = $storageService->uploadImage($request->file('invitemimage'), 'images');
 
             if (!$imageUrl) {
                 throw new \Exception('Failed to upload image to storage. Please try again.');

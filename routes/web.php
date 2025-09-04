@@ -6,6 +6,40 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
+
+// Test shop-logos bucket
+Route::get('/test-shop-logos', function() {
+    $storage = new App\Services\SupabaseStorageService();
+    $testImage = create_test_image(); // Your test image function
+    $url = $storage->uploadImage($testImage, 'shop-logos');
+    return $url ? 'Shop logos working: ' . $url : 'Failed';
+});
+
+// Test images bucket
+Route::get('/test-images', function() {
+    $storage = new App\Services\SupabaseStorageService();
+    $testImage = create_test_image(); // Your test image function
+    $url = $storage->uploadImage($testImage, 'images');
+    return $url ? 'Images bucket working: ' . $url : 'Failed';
+});
+
+Route::get('/test-supabase-connection', function() {
+    try {
+        $projectUrl = env('SUPABASE_PROJECT_URL');
+        $apiKey = env('SUPABASE_API_KEY');
+
+        return [
+            'project_url' => $projectUrl,
+            'api_key_exists' => !empty($apiKey),
+            'api_key_length' => strlen($apiKey),
+            'env_loaded' => app()->environment(),
+        ];
+
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
+
 Route::get('/test-supabase-upload', function() {
     // Create a test image
     $testImage = storage_path('app/test.jpg');

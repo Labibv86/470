@@ -46,7 +46,8 @@ class SellRequestController extends Controller
         try {
             // Upload to Supabase - SIMPLE!
             $storageService = new SupabaseStorageService();
-            $imageUrl = $storageService->uploadImage($request->file('itemimage'));
+            // Use 'images' bucket for sell request items
+            $imageUrl = $storageService->uploadImage($request->file('itemimage'), 'images');
 
             if (!$imageUrl) {
                 throw new \Exception('Failed to upload image to storage. Please try again.');

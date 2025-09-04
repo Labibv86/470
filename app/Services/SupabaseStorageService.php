@@ -10,19 +10,28 @@ class SupabaseStorageService
     public function uploadImage($file, $bucket = 'item-images')
     {
         try {
-            // Generate unique filename
-            $filename = 'item_' . time() . '_' . uniqid() . '.' . $file->extension();
-
             // Get Supabase credentials
             $projectUrl = env('SUPABASE_PROJECT_URL');
             $apiKey = env('SUPABASE_API_KEY');
 
+            \Log::info('Supabase credentials check:', [
+                'project_url' => $projectUrl,
+                'api_key_exists' => !empty($apiKey),
+                'bucket' => $bucket
+            ]);
+
             if (!$projectUrl || !$apiKey) {
-                throw new \Exception('Supabase credentials not configured');
+                \Log::error('Supabase credentials missing');
+                throw new \Exception('Storage configuration error');
             }
 
-            // Upload to Supabase using simple HTTP client
-            $response = Http::withHeaders([
+            // Generate unique filename
+            $filename = 'shop_' . time() . '_' . uniqid() . '.' . $file->extension();
+
+            \Log::info('Attempting upload:', ['filename' => $filename]);
+
+            // Upload to Supabase
+            $response = Http::timeout(30)->withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => $file->getMimeType(),
             ])->withBody(
@@ -30,16 +39,22 @@ class SupabaseStorageService
                 $file->getMimeType()
             )->post("{$projectUrl}/storage/v1/object/{$bucket}/{$filename}");
 
+            \Log::info('Supabase response:', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+
             if ($response->successful()) {
-                // Return public URL
-                return "{$projectUrl}/storage/v1/object/public/{$bucket}/{$filename}";
+                $url = "{$projectUrl}/storage/v1/object/public/{$bucket}/{$filename}";
+                \Log::info('Upload successful:', ['url' => $url]);
+                return $url;
             }
 
-            Log::error('Supabase upload failed: ' . $response->body());
+            \Log::error('Supabase upload failed: ' . $response->body());
             return null;
 
         } catch (\Exception $e) {
-            Log::error('Supabase upload error: ' . $e->getMessage());
+            \Log::error('Supabase upload error: ' . $e->getMessage());
             return null;
         }
     }
