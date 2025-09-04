@@ -5,6 +5,7 @@ use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
+use Illuminate\Http\Request;
 
 Route::get('/test-file-upload', function(Request $request) {
     return view('test-upload');
