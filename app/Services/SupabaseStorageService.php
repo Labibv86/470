@@ -9,21 +9,23 @@ class SupabaseStorageService
 {
     public function uploadImage($file, $bucket = 'shop-logos')
     {
+        // Immediate debug output
+        Log::info('=== SUPABASE UPLOAD START ===');
+        Log::info('Bucket: ' . $bucket);
+        Log::info('File: ' . $file->getClientOriginalName());
+        Log::info('Size: ' . $file->getSize() . ' bytes');
+        Log::info('MIME: ' . $file->getMimeType());
+
         try {
             // Get Supabase credentials
             $projectUrl = env('SUPABASE_PROJECT_URL');
             $apiKey = env('SUPABASE_API_KEY');
 
-            Log::info('=== SUPABASE UPLOAD DEBUG START ===');
             Log::info('Project URL: ' . $projectUrl);
             Log::info('API Key exists: ' . (!empty($apiKey) ? 'Yes' : 'No'));
-            Log::info('Bucket: ' . $bucket);
-            Log::info('File name: ' . $file->getClientOriginalName());
-            Log::info('File size: ' . $file->getSize());
-            Log::info('File mime: ' . $file->getMimeType());
 
             if (!$projectUrl || !$apiKey) {
-                Log::error('MISSING CREDENTIALS: Project URL or API Key is empty');
+                Log::error('MISSING: Supabase credentials not configured');
                 return null;
             }
 
@@ -32,33 +34,39 @@ class SupabaseStorageService
             Log::info('Generated filename: ' . $filename);
 
             // Upload to Supabase
-            $url = "{$projectUrl}/storage/v1/object/{$bucket}/{$filename}";
-            Log::info('Upload URL: ' . $url);
+            $uploadUrl = "{$projectUrl}/storage/v1/object/{$bucket}/{$filename}";
+            Log::info('Upload URL: ' . $uploadUrl);
+
+            // Read file contents
+            $fileContents = file_get_contents($file->getRealPath());
+            Log::info('File contents size: ' . strlen($fileContents) . ' bytes');
 
             $response = Http::timeout(30)->withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => $file->getMimeType(),
             ])->withBody(
-                file_get_contents($file->getRealPath()),
+                $fileContents,
                 $file->getMimeType()
-            )->post($url);
+            )->post($uploadUrl);
 
             Log::info('Response Status: ' . $response->status());
             Log::info('Response Body: ' . $response->body());
-            Log::info('=== SUPABASE UPLOAD DEBUG END ===');
 
             if ($response->successful()) {
                 $publicUrl = "{$projectUrl}/storage/v1/object/public/{$bucket}/{$filename}";
                 Log::info('SUCCESS: Upload completed - ' . $publicUrl);
+                Log::info('=== SUPABASE UPLOAD END ===');
                 return $publicUrl;
             }
 
-            Log::error('FAILED: Supabase upload failed');
+            Log::error('FAILED: Supabase upload failed with status ' . $response->status());
+            Log::info('=== SUPABASE UPLOAD END ===');
             return null;
 
         } catch (\Exception $e) {
             Log::error('EXCEPTION: ' . $e->getMessage());
             Log::error('Exception trace: ' . $e->getTraceAsString());
+            Log::info('=== SUPABASE UPLOAD END ===');
             return null;
         }
     }
