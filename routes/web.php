@@ -22,6 +22,8 @@ Route::get('/', fn() => redirect()->route('login.page'));
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login.page');
 
+
+
 Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
 
 
@@ -47,7 +49,6 @@ Route::get('/explore/search', [ExploreController::class, 'search'])->name('explo
 
 Route::get('/seller', fn() => view('seller'))->name('seller.page');
 Route::get('/ownershopsetup', fn() => view('ownershopsetup'))->name('ownershopsetup.page');
-Route::get('/myaccount', fn() => view('myaccount'))->name('myaccount.page');
 
 
 
@@ -110,12 +111,13 @@ Route::group(['middleware' => ['web']], function () {
 
 
 use App\Http\Controllers\AccountController;
-Route::get('/myaccount', [AccountController::class, 'show'])
-    ->middleware('auth')
+
+Route::match(['get', 'post'], '/myaccount', [AccountController::class, 'show'])
     ->name('myaccount.page');
 
-Route::get('/myaccount', [AccountController::class, 'show'])->name('myaccount.page');
 Route::post('/myaccount/backtoexplore', [AccountController::class, 'backToExplore'])->name('myaccount.backtoexplore');
+
+
 
 
 use App\Http\Controllers\SellerController;

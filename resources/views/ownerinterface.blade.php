@@ -6,6 +6,10 @@
     <link href="/css/ownerinterface.css" rel="stylesheet">
 
 </head>
+
+@php
+    use Carbon\Carbon;
+@endphp
 <body>
 
 <div class="header">
@@ -231,19 +235,35 @@
                     <button type="submit" class="sellreqbutton">Drop</button>
                 </form>
 
-                <div class="customer-info-container">
-                    <button class="sellreqbutton">Customer Info</button>
-                    <div class="customer-info-tooltip">
-                        @if($customerInfo)
-                            <p><strong>Name:</strong> {{ $customerInfo->firstname }} {{ $customerInfo->lastname }}</p>
-                            <p><strong>Email:</strong> {{ $customerInfo->email }}</p>
-                            <p><strong>Phone:</strong> {{ $customerInfo->phone }}</p>
-                            <p><strong>Address:</strong> {{ $customerInfo->address }}</p>
-                        @else
-                            <p>N/A - Not currently rented or sold</p>
-                        @endif
-                    </div>
-                </div>
+                @if($customerInfo)
+                    <p><strong>Name:</strong> {{ $customerInfo['firstname'] }} {{ $customerInfo['lastname'] }}</p>
+                    <p><strong>Email:</strong> {{ $customerInfo['email'] }}</p>
+                    <p><strong>Phone:</strong> {{ $customerInfo['phone'] }}</p>
+                    <p><strong>Address:</strong> {{ $customerInfo['address'] }}</p>
+
+
+
+                    @if(!empty($customerInfo['rentdate']))
+                        <p><strong>Rent Date:</strong> {{ Carbon::parse($customerInfo['rentdate'])->format('Y-m-d') }}</p>
+                    @endif
+
+                    @if(!empty($customerInfo['returndate']))
+                        @php
+                            $returnDate = Carbon::parse($customerInfo['returndate']);
+                            $isPast = $returnDate->isPast();
+                        @endphp
+
+                        <p style="color: {{ $isPast ? 'red' : 'inherit' }};">
+                            <strong>Return Date:</strong> {{ $returnDate->format('Y-m-d') }}
+                        </p>
+                    @endif
+
+                @else
+                    <p>N/A - Not currently rented or sold</p>
+                @endif
+
+
+
 
 
                 <div class="edit-section" style="margin-top:10px;">

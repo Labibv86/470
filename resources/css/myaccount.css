@@ -18,6 +18,7 @@ body {
 }
 
 h1 {
+    font-family: Quicksand;
     text-align: center;
     color: black;
     font-size: xx-large;
@@ -29,6 +30,7 @@ h1 {
 
 
 .items p{
+    font-family: Quicksand;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -50,6 +52,7 @@ h1 {
 
 }
 .account-info {
+    font-family: Quicksand;
     font-size: 16px;
     line-height: 1.8;
     border-bottom: 1px solid #ddd;
@@ -131,6 +134,7 @@ h1 {
 }
 
 .iteminfo {
+    font-family: Quicksand;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -139,6 +143,7 @@ h1 {
 }
 
 .sellinfo {
+    font-family: Quicksand;
     display: flex;
     flex-direction: column;
     border: solid;

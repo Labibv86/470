@@ -31,7 +31,6 @@ class OwnerInterfaceController extends Controller
 
     $shopId = $shop->shopid;
 
-    // Your existing item queries
     $itemsInventory = Item::where('shopid', $shopId)
         ->where('itemuse', '!=', 'old')
         ->get();
@@ -50,8 +49,9 @@ class OwnerInterfaceController extends Controller
         ->get()
         ->keyBy('itemid');
 
-    // Get customer info for each inventory item
+
     $itemCustomerInfo = [];
+
     foreach ($itemsInventory as $item) {
         $customerInfo = null;
 
@@ -64,7 +64,12 @@ class OwnerInterfaceController extends Controller
         if ($rentalItem) {
             $customer = User::find($rentalItem->renterid);
             if ($customer) {
-                $customerInfo = $customer;
+                // Convert customer model to array so we can add extra fields
+                $customerInfo = $customer->toArray();
+
+                // Add rentdate and returndate to the array
+                $customerInfo['rentdate'] = $rentalItem->rentdate;
+                $customerInfo['returndate'] = $rentalItem->returndate;
             }
         } else {
             // Check resale items
@@ -76,13 +81,13 @@ class OwnerInterfaceController extends Controller
             if ($resaleItem) {
                 $customer = User::find($resaleItem->lastbidderid);
                 if ($customer) {
-                    $customerInfo = $customer;
+                    $customerInfo = $customer->toArray();
                 }
             }
         }
-
         $itemCustomerInfo[$item->itemserial] = $customerInfo;
     }
+
 
     return view('ownerinterface', compact(
         'shop',
@@ -95,22 +100,32 @@ class OwnerInterfaceController extends Controller
         'shopId' // ← ADD THIS if you need it in blade
     ));
 }
-    public function getCustomerLocation($id)
-    {
-        $customer = User::find($id);
 
-        if (!$customer || !$customer->address) {
-            return response()->json([
-                'error' => 'Customer address not found'
-            ], 404);
-        }
 
-        return response()->json([
-            'address' => $customer->address,
-            'name' => $customer->firstname . ' ' . $customer->lastname,
-            'phone' => $customer->phone
-        ]);
-    }
+//    public function getCustomerLocation($id)
+//    {
+//        $customer = User::find($id);
+//
+//        if (!$customer || !$customer->address) {
+//            return response()->json([
+//                'error' => 'Customer address not found'
+//            ], 404);
+//        }
+//
+//
+//        $rentedrentalItems = RentalItem::where('renterid', $id)->get(['rentdate', 'returndate']);
+//
+//        return response()->json([
+//            'name' => $customer->firstname . ' ' . $customer->lastname,
+//            'id' => $customer->userid,
+//            'email' => $customer->email,
+//            'phone' => $customer->phone,
+//            'address' => $customer->address,
+//            'rentedrentalItems' => $rentedrentalItems
+//        ]);
+//    }
+
+
     public function dropItem(Request $request)
     {
         $request->validate(['item_serial' => 'required|integer']);

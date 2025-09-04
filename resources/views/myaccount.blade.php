@@ -6,6 +6,10 @@
     <link href="/css/myaccount.css" rel="stylesheet">
 
 </head>
+
+@php
+    use Carbon\Carbon;
+@endphp
 <body>
 
 
@@ -17,6 +21,7 @@
     </div>
 </form>
 <form action="{{ route('myaccount.page') }}" method="POST" enctype="multipart/form-data">
+    @csrf
 <div class="account-container">
 
     <div class="account-info">
@@ -31,6 +36,8 @@
         <p><strong>Account Balance:</strong> {{ $user->points }} BDT</p>
     </div>
 </div>
+
+
 
 <div class="trending" style="max-width: 1000px; margin: 50px auto; padding: 30px; border:solid; border-radius: 8px;">
     <div class="trendingtextbox">
@@ -71,15 +78,23 @@
                 $imageSrc = $rent->itemimage
                     ? asset('storage/' . $rent->itemimage)
                     : asset('images/default-item.png');
+
+                $returnDate = Carbon::parse($rent->returndate);
+                $isReturnDatePassed = $returnDate->isPast();
             @endphp
-            <div style="border: 1px solid #ddd; padding: 20px; border: solid; border-radius: 8px; width: fit-content;">
+            <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; width: fit-content;">
                 <img src="{{ $imageSrc }}" style="width: 250px; height: 150px; object-fit: cover; border-radius: 4px;" alt="Rented Item">
                 <br>
                 <p><strong>Item Name:</strong> {{ $rent->itemname }}</p>
                 <p><strong>Rent Paid:</strong> {{ $rent->rentpaid }} BDT</p>
-                <p><strong>Rent Date:</strong> {{ $rent->rentdate }}</p>
-                <p><strong>Return Date:</strong> {{ $rent->returndate }}</p>
+                <p><strong>Rent Date:</strong> {{ Carbon::parse($rent->rentdate)->format('Y-m-d') }}</p>
+                <p style="color: {{ $isReturnDatePassed ? 'red' : 'inherit' }};">
+                    <strong>Return Date:</strong> {{ $returnDate->format('Y-m-d') }}
+                </p>
                 <p><strong>Shop ID:</strong> {{ $rent->shopid }}</p>
+                <button type="submit" name="returnVehicle" value="{{ $rent->itemid }}" style="width: 100%; height: 30px; border-radius: 6px">
+                    Return Vehicle
+                </button>
             </div>
         @endforeach
 
