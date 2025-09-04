@@ -6,30 +6,23 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
-Route::get('/test-env', function() {
-    return [
-        'SUPABASE_PROJECT_URL' => env('SUPABASE_PROJECT_URL'),
-        'SUPABASE_API_KEY' => env('SUPABASE_API_KEY') ? 'SET (' . strlen(env('SUPABASE_API_KEY')) . ' chars)' : 'NOT SET',
-        'APP_ENV' => env('APP_ENV')
-    ];
+Route::get('/test-file-upload', function(Request $request) {
+    return view('test-upload');
 });
 
-Route::get('/test-supabase-connect', function() {
-    $projectUrl = env('SUPABASE_PROJECT_URL');
-    $apiKey = env('SUPABASE_API_KEY');
+Route::post('/test-file-upload', function(Request $request) {
+    \Log::info('File upload test:', [
+        'hasFile' => $request->hasFile('testfile'),
+        'fileValid' => $request->file('testfile')?->isValid(),
+        'fileSize' => $request->file('testfile')?->getSize(),
+        'fileName' => $request->file('testfile')?->getClientOriginalName()
+    ]);
 
-    try {
-        $response = Http::timeout(10)->withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
-        ])->get("{$projectUrl}/storage/v1/bucket");
-
-        return [
-            'status' => $response->status(),
-            'buckets' => $response->successful() ? $response->json() : 'Error: ' . $response->body()
-        ];
-    } catch (\Exception $e) {
-        return ['error' => $e->getMessage()];
+    if ($request->hasFile('testfile') && $request->file('testfile')->isValid()) {
+        return 'File is valid and ready for upload!';
     }
+
+    return 'No valid file uploaded';
 });
 
 

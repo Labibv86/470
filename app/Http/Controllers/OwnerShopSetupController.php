@@ -43,31 +43,21 @@ class OwnerShopSetupController extends Controller
         }
 
         try {
-            // UPLOAD TO SUPABASE - CHANGED THIS PART
             $storageService = new SupabaseStorageService();
             $logoUrl = $storageService->uploadImage($request->file('shoplogo'), 'shop-logos');
 
+            \Log::info('Upload result:', ['logoUrl' => $logoUrl]); // ADD THIS LINE
+
             if (!$logoUrl) {
-                throw new \Exception('Failed to upload shop logo. Please try again.');
+                // Get the actual error from logs or add error tracking in your service
+                \Log::error('Upload failed - check SupabaseStorageService logs for details');
+                throw new \Exception('Upload failed. Check server logs for details.');
             }
-
-            // Create shop with Supabase URL
-            Shop::create([
-                'shopname'     => $request->shopname,
-                'shopemail'    => $request->shopemail,
-                'shoppassword' => $request->shoppassword,
-                'shopphone'    => $request->shopphone,
-                'license'      => $request->license,
-                'officeaddress'=> $request->officeaddress,
-                'shoplogo'     => $logoUrl, // STORE URL NOW, NOT PATH
-                'userid'       => $owner->userid,
-                'points'       => 100000000,
-            ]);
-
-            return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
-
+            // ... rest of your code
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
+            \Log::error('Registration error: ' . $e->getMessage());
+            \Log::error('Exception trace: ' . $e->getTraceAsString()); // ADD THIS
+            return back()->withErrors(['error' => 'Registration failed. Please try again.'])->withInput();
         }
     }
 
