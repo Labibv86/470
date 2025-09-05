@@ -43,7 +43,7 @@
 
         <div class="item-box">
 
-            <img src="{{ $imageSrc }}" alt="{{ $cart->itemimage }}" style="width: 150px; height: 150px; object-fit: cover;">
+            <img src="{{ $imageSrc }}" alt="{{ $cart->itemimage }}" style="width: 250px; height: 150px; object-fit: cover;">
             <p><strong>Item Name:</strong> {{ $item->itemname ?? 'Unknown' }}</p>
             <p><strong>Total Amount:</strong> {{ $cart->rental_price }} BDT</p>
             <p><strong>Payment Status:</strong> {{ $cart->paymentstatus ?: 'Pending' }}</p>
@@ -55,7 +55,6 @@
 
 
         <div class="bottom">
-
                 <div>
                     <form method="POST" action="{{ route('cart.index') }}" class="actions">
                     <h3>Total Amount to Pay: {{ $totalAmount }} BDT</h3>
