@@ -18,6 +18,7 @@ class Shop extends Model
         'officeaddress',
         'shoplogo',
         'userid',
+        'points',
     ];
 
 }

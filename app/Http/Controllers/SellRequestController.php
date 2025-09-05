@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use App\Models\SellRequest;
 use App\Models\UserSellRecord;
-use App\Services\SupabaseStorageService; // Add this
 
 class SellRequestController extends Controller
 {
@@ -33,7 +32,7 @@ class SellRequestController extends Controller
             'description'   => 'required|string',
             'originalprice' => 'required|numeric|min:0',
             'askingprice'   => 'required|numeric|min:0',
-            'itemimage'     => 'required|image|max:2048',
+            // REMOVED: 'itemimage' validation since we're using default image
         ]);
 
         $shopID = session('selected_shop_id');
@@ -44,14 +43,8 @@ class SellRequestController extends Controller
         }
 
         try {
-            // Upload to Supabase - SIMPLE!
-            $storageService = new SupabaseStorageService();
-            // Use 'images' bucket for sell request items
-            $imageUrl = $storageService->uploadImage($request->file('itemimage'), 'images');
-
-            if (!$imageUrl) {
-                throw new \Exception('Failed to upload image to storage. Please try again.');
-            }
+            // USE DEFAULT CAR IMAGE INSTEAD OF FILE UPLOAD
+            $imagePath = 'images/default-car.png'; // Path to your default car image
 
             $sellRequest = SellRequest::create([
                 'shopid'          => $shopID,
@@ -61,7 +54,7 @@ class SellRequestController extends Controller
                 'itemdescription' => $request->description,
                 'originalprice'   => $request->originalprice,
                 'askingprice'     => $request->askingprice,
-                'itemimage'       => $imageUrl, // Store the URL now!
+                'itemimage'       => $imagePath, // Store default image path
                 'itemstatus'      => 'pending',
             ]);
 

@@ -60,7 +60,7 @@
                         <div class="trendingitemsbox">
                             @foreach ($items as $item)
                                 @php
-                                    $imageSrc = $item->image_url
+                                    $imageSrc = asset($item->itemimage)
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
@@ -80,11 +80,12 @@
                         <div class="popularshopsbox">
                             @foreach ($shops as $shop)
                                 @php
-                                    $imageSrc = $shop->logo_url;
+                                    $imageSrc = asset($shop->shoplogo);
                                 @endphp
                                 <div class="shop1">
                                     <div class="shoppic">
-                                        <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width:100%; height:120px; object-fit:fill;">
+                                        <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width: 100%; height:120px; object-fit: fill;"
+                                             onerror="this.src='{{ asset('images/default-shop.png') }}'">
                                     </div>
                                     <div class="shopinfo">
                                         <div class="shoptextbox">

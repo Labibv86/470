@@ -52,7 +52,7 @@ class OwnerShopSetupController extends Controller
             'shopphone'    => $request->shopphone,
             'license'      => $request->license,
             'officeaddress'=> $request->officeaddress,
-            'shoplogo'     => $logoPath, // Store default image path
+            'shoplogo'     => $logoPath,
             'userid'       => $owner->userid,
             'points'       => 100000000,
         ]);
@@ -68,8 +68,6 @@ class OwnerShopSetupController extends Controller
         ]);
 
         $userid = Session::get('userid');
-
-
 
         $shop = Shop::where([
             ['shopemail', $request->entershopemail],

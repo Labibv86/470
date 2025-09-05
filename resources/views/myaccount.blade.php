@@ -47,9 +47,8 @@
 
             @foreach ($wonItems as $row)
                 @php
-                    $imageSrc = $row['itemimage']
-                        ? asset('storage/' . $row['itemimage'])
-                        : asset('images/default-item.png');
+                    $imageSrc = asset($row['itemimage'])
+
                 @endphp
                 <div class="item1">
                     <div class="itempic">
@@ -75,10 +74,7 @@
 
         @foreach ($rentedItemsWithDetails as $rent)
             @php
-                $imageSrc = $rent->itemimage
-                    ? asset('storage/' . $rent->itemimage)
-                    : asset('images/default-item.png');
-
+                $imageSrc = asset($rent->itemimage);
                 $returnDate = Carbon::parse($rent->returndate);
                 $isReturnDatePassed = $returnDate->isPast();
             @endphp
@@ -107,9 +103,8 @@
         @if (!empty($sellRequests))
             @foreach ($sellRequests as $details)
                 @php
-                    $imageSrc = $details->itemimage
-                        ? asset('storage/' . $details->itemimage)
-                        : asset('images/default-item.png');
+                    $imageSrc = asset($details->itemimage)
+
                 @endphp
                 <div class="items" style="max-width: 1000px; margin: 5px; padding: 10px; border:solid; border-radius: 8px;">
                     <h3>{{ $details->itemname }} ({{ $details->itemmodel }})</h3>

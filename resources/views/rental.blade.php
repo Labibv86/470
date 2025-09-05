@@ -134,9 +134,7 @@
                                     <div class="item1">
                                         <div class="itempic">
                                             @php
-                                                $imageSrc = $item->itemimage
-                                                    ? asset('storage/' . $item->itemimage)
-                                                    : asset('images/default-item.png');
+                                                $imageSrc = asset($item->itemimage)
                                             @endphp
                                             <img src="{{ $imageSrc }}" alt="itemimage" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
                                         </div>
@@ -163,9 +161,8 @@
                         <div class="popularshopsbox">
                             @foreach($shops as $shop)
                                 @php
-                                    $imageSrc = $shop->shoplogo
-                                        ? asset('storage/' . $shop->shoplogo)
-                                        : asset('images/default-shop-logo.png');
+                                    $imageSrc = asset($shop->shoplogo)
+
                                 @endphp
                                 <div class="shop1">
                                     <div class="shoppic">

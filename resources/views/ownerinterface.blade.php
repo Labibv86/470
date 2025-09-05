@@ -68,7 +68,7 @@
             <div><input type="number" name="biddingprice" min="0" placeholder="Bidding Start Price" value="{{ old('biddingprice') }}" required /></div>
             <div><input type="number" name="totalcopies" min="0" placeholder="Total Copies" value="{{ old('totalcopies') }}" required /></div>
 
-            <div><input type="file" name="invitemimage" accept="image/*" required /></div>
+            <div><input type="hidden" name="shoplogo" value="default-car2.png"></div>
 
             <div><button type="submit" name="add">Add to Inventory</button></div>
         </form>
@@ -81,12 +81,12 @@
         <div class="item-list">
             @foreach($itemsRental as $item)
             @php
-                $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+                $imageSrc = asset($item->itemimage);
                 $renterId = $rentalItem[$item->itemserial]->renterid ?? 'N/A';
 
             @endphp
             <div class="item-card">
-                <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px; object-fit:cover;">
+                <img src="{{ $imageSrc }}" alt="" style="width:250px; height:150px; object-fit:cover;">
                 <p>Item Name: {{ $item->itemname }}</p>
                 <p>Model: {{ $item->itemmodel }}</p>
                 <p>Rental Price: {{ $item->rentalprice }} BDT</p>
@@ -109,13 +109,13 @@
         <div class="item-list">
             @foreach($itemsResale as $item)
                 @php
-                    $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+                    $imageSrc = asset($item->itemimage);
                     $currentBidder = $resaleItemsWithBidder[$item->itemserial]->lastbidderid ?? 'N/A';
                     $currentBid = $resaleItemsWithBidder[$item->itemserial]->currentbid ?? 'N/A';
                     $resaleSl = $resaleItemsWithBidder[$item->itemserial]->resaleserial;
                 @endphp
                 <div class="item-card">
-                    <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px;  object-fit:cover;">
+                    <img src="{{ $imageSrc }}" alt="" style="width:250px; height:150px; object-fit:cover;">
                     <p>Item Name: {{ $item->itemname }}</p>
                     <p>Model: {{ $item->itemmodel }}</p>
                     <p>Resale Price: {{ $item->resaleprice }}</p>
@@ -144,13 +144,11 @@
         <div class="item-list">
             @forelse($sellRequests as $request)
                 @php
-                    $imageSrc = $request->itemimage
-                        ? asset('storage/' . $request->itemimage)
-                        : asset('images/default-item.png');
+                    $imageSrc = asset($request->itemimage);
                 @endphp
 
                 <div class="item-card">
-                    <img src="{{ $imageSrc }}" alt="{{ $request->itemname }}" style="width:150px; height:150px; object-fit:cover;">
+                    <img src="{{ $imageSrc }}" alt="" style="width:250px; height:150px; object-fit:cover;">
 
                     <p><strong>Name:</strong> {{ $request->itemname }}</p>
                     <p><strong>Model:</strong> {{ $request->itemmodel }}</p>
@@ -187,12 +185,12 @@
     <div class="item-list">
         @foreach($itemsInventory as $item)
             @php
-                $imageSrc = $item->itemimage ? asset('storage/' . $item->itemimage) : asset('images/default-item.png');
+                $imageSrc = asset($item->itemimage);
                 $customerInfo = $itemCustomerInfo[$item->itemserial] ?? null;
             @endphp
 
             <div class="item-card">
-                <img src="{{ $imageSrc }}" alt="{{ $item->itemname }}" style="width:250px; height:150px; object-fit:cover;">
+                <img src="{{ $imageSrc }}" alt="" style="width:250px; height:150px; object-fit:cover;">
                 <p><strong>Car Make:</strong> {{ $item->itemname }}</p>
                 <p><strong>Car Model:</strong> {{ $item->itemmodel }}</p>
                 <p><strong>Resale Price:</strong> {{ $item->resaleprice }}</p>
@@ -324,8 +322,6 @@
                         <label for="edittotalcopies-{{ $item->itemserial }}">Total Copies</label>
                         <input type="number" id="edittotalcopies-{{ $item->itemserial }}" name="edittotalcopies" min="0" value="{{ old('edittotalcopies', $item->totalcopies) }}" placeholder="Total Copies">
 
-                        <label for="edititemimage-{{ $item->itemserial }}">Item Image</label>
-                        <input type="file" id="edititemimage-{{ $item->itemserial }}" name="edititemimage" accept="image/*">
 
                         <button type="submit" class="sellreqbutton" style="margin-top:10px;">Save Changes</button>
                     </form>

@@ -13,7 +13,7 @@ use App\Models\RentalItem;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Services\SupabaseStorageService; // Add this
+
 
 
 class OwnerInterfaceController extends Controller
@@ -109,44 +109,19 @@ class OwnerInterfaceController extends Controller
         $request->validate(['item_serial' => 'required|integer']);
 
         try {
-            // Find the item
+
             $item = Item::findOrFail($request->item_serial);
 
-            // Check if item can be dropped (only Inventory, Rental, or Sold status)
             $allowedStatuses = ['Inventory', 'Rental', 'Sold'];
 
             if (!in_array($item->itemuse, $allowedStatuses)) {
                 return back()->withErrors('Vehicle under Rental Deal/Resale Auction. Cannot be dropped.');
             }
 
-            // Start transaction for data consistency
             DB::beginTransaction();
-
-            // Delete from resaleitems table
             ResaleItem::where('itemid', $item->itemserial)->delete();
-
-            // Delete from rentalitems table
             RentalItem::where('itemid', $item->itemserial)->delete();
-
-            // DELETE IMAGE FROM SUPABASE - UPDATED THIS PART
-            if ($item->itemimage) {
-                $storageService = new SupabaseStorageService();
-
-                // Check if it's a Supabase URL (not a local path)
-                if (filter_var($item->itemimage, FILTER_VALIDATE_URL)) {
-                    $storageService->deleteImage($item->itemimage);
-                } else {
-                    // Fallback: delete from local storage if it's an old local path
-                    if (Storage::disk('public')->exists($item->itemimage)) {
-                        Storage::disk('public')->delete($item->itemimage);
-                    }
-                }
-            }
-
-            // Delete the item itself
             $item->delete();
-
-            // Commit transaction
             DB::commit();
 
             \Log::info('Item and all related records deleted successfully.');
@@ -160,7 +135,6 @@ class OwnerInterfaceController extends Controller
             if (DB::transactionLevel() > 0) {
                 DB::rollBack();
             }
-
             \Log::error('Error dropping item: ' . $e->getMessage());
             return back()->withErrors('Error dropping item. Please try again.');
         }
@@ -438,33 +412,14 @@ class OwnerInterfaceController extends Controller
             'editrentalprice'  => 'sometimes|numeric|min:0',
             'editbiddingprice' => 'sometimes|numeric|min:0',
             'edittotalcopies'  => 'sometimes|integer|min:0',
-            'edititemimage'    => 'nullable|image|max:2048',
+
         ]);
 
         $item = Item::findOrFail($request->item_serial);
         \Log::info('Found item:', ['itemserial' => $item->itemserial]);
 
         try {
-            // Handle image upload - UPDATED FOR SUPABASE
-            if ($request->hasFile('edititemimage')) {
-                $storageService = new SupabaseStorageService();
 
-                // Delete old image from Supabase if it exists
-                if ($item->itemimage && filter_var($item->itemimage, FILTER_VALIDATE_URL)) {
-                    $storageService->deleteImage($item->itemimage);
-                }
-
-                // Upload new image to Supabase
-                $imageUrl = $storageService->uploadImage($request->file('edititemimage'), 'images');
-
-                if (!$imageUrl) {
-                    throw new \Exception('Failed to upload new image to storage.');
-                }
-
-                $item->itemimage = $imageUrl;
-            }
-
-            // Update other fields
             if ($request->has('edititemname')) {
                 $item->itemname = $request->edititemname;
             }
@@ -512,7 +467,7 @@ class OwnerInterfaceController extends Controller
             'rentalprice'    => 'required|numeric|min:0',
             'biddingprice'   => 'required|numeric|min:0',
             'totalcopies'    => 'required|integer|min:1',
-            'invitemimage'   => 'required|image|max:2048',
+
         ]);
 
         $shopemail = Session::get('shopemail');
@@ -525,13 +480,8 @@ class OwnerInterfaceController extends Controller
         $shopId = $shop->shopid;
 
         try {
-            // UPLOAD TO SUPABASE - CHANGED THIS PART
-            $storageService = new SupabaseStorageService();
-            $imageUrl = $storageService->uploadImage($request->file('invitemimage'), 'images');
 
-            if (!$imageUrl) {
-                throw new \Exception('Failed to upload image to storage. Please try again.');
-            }
+            $imagePath = 'images/default-car2.png';
 
             // Create new item record
             $item = new Item();
@@ -547,7 +497,7 @@ class OwnerInterfaceController extends Controller
             $item->rentalprice     = $request->input('rentalprice');
             $item->biddingprice    = $request->input('biddingprice');
             $item->totalcopies     = $request->input('totalcopies');
-            $item->itemimage       = $imageUrl; // STORE URL NOW, NOT PATH
+            $item->itemimage       = $imagePath;
             $item->itemuse         = 'Inventory';
 
             $item->save();

@@ -83,7 +83,7 @@
                         <div class="trendingitemsbox">
                             @foreach($items_general as $item)
                                 @php
-                                    $imageSrc = $item->image_url
+                                    $imageSrc = asset($item->itemimage)
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
@@ -102,7 +102,7 @@
                         <div class="trendingitemsbox">
                             @foreach($items_resale as $item)
                                 @php
-                                    $imageSrc = $item->image_url
+                                    $imageSrc = asset($item->itemimage)
 
                                 @endphp
                                 <div class="item1">
@@ -122,7 +122,7 @@
                         <div class="trendingitemsbox">
                             @foreach($items_rental as $item)
                                 @php
-                                    $imageSrc = $item->image_url
+                                    $imageSrc = asset($item->itemimage)
 
                                 @endphp
                                 <div class="item1">
@@ -147,8 +147,7 @@
                                 @endphp
                                 <div class="shop1">
                                     <div class="shoppic">
-                                        <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width: 100%; height:120px; object-fit: fill;"
-                                             onerror="this.src='{{ asset('images/default-shop.png') }}'">
+                                        <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width: 100%; height:120px; object-fit: fill;">
                                     </div>
                                     <div class="shopinfo">
                                         <div class="shoptextbox">

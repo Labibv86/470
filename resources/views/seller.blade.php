@@ -26,15 +26,14 @@
         <div class="shopbox">
             @foreach($shops as $shop)
                 @php
-                    $imageSrc = $shop->shoplogo
-                        ? asset('storage/' . $shop->shoplogo)
-                        : asset('images/default-item.png');
+                    $imageSrc = asset($shop->shoplogo);
                 @endphp
                 <form action="{{ route('seller.request') }}" method="POST" style="margin-bottom: 20px;">
                     @csrf
                     <div class="shop1">
                         <div class="shoppic">
-                            <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width: 300px; height: 200px; object-fit: fill;">
+                            <img src="{{ $imageSrc }}" alt="Shop Logo" class="shoplogo" style="width: 100%; height:120px; object-fit: fill;"
+                                 onerror="this.src='{{ asset('images/default-shop.png') }}'">
                         </div>
                         <div class="shopinfo">
                             <div class="shoptextbox">

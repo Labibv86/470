@@ -49,7 +49,7 @@
             </div>
 
             <div class="imageboxes">
-                <input class="custom-file-input" type="file" id="itemimage" name="itemimage" accept="image/*" required>
+                <input type="hidden" name="shoplogo" value="default-car.png">
             </div>
 
 
