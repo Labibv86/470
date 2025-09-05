@@ -38,9 +38,7 @@
             $item = \App\Models\Item::where('itemserial', $cart->itemid)->first();
         @endphp
             @php
-                $imageSrc = $item->itemimage
-                    ? asset('storage/' . $item->itemimage)
-                    : asset('images/default-item.png');
+                $imageSrc = asset($item->itemimage)
             @endphp
 
         <div class="item-box">
