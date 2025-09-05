@@ -33,7 +33,7 @@ class OwnerShopSetupController extends Controller
             'license'        => 'required|numeric|unique:shops,license',
             'officeaddress'  => 'required|string',
             'owneremail'     => 'required|email|exists:users,email',
-            
+
         ]);
 
         $owner = User::where('email', $request->owneremail)->first();
