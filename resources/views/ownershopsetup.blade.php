@@ -8,11 +8,6 @@
 
 </head>
 <body>
-<form method="POST" action="/test-file-upload" enctype="multipart/form-data">
-    @csrf
-    <input type="file" name="testfile" required>
-    <button type="submit">Test Upload</button>
-</form>
 
 <div class="whole">
 

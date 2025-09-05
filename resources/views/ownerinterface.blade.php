@@ -148,7 +148,7 @@
                 @endphp
 
                 <div class="item-card">
-                    <img src="{{ $imageSrc }}" alt="" style="width:250px; height:150px; object-fit:cover;">
+                    <img src="{{ $imageSrc }}" alt="" style="width:150px; height:100px; object-fit:cover;">
 
                     <p><strong>Name:</strong> {{ $request->itemname }}</p>
                     <p><strong>Model:</strong> {{ $request->itemmodel }}</p>
@@ -256,9 +256,9 @@
                         </p>
                     @endif
 
-                @else
-                    <p>N/A - Not currently rented or sold</p>
-                @endif
+{{--                @else--}}
+{{--                    <p>N/A - Not currently rented or sold</p>--}}
+{{--                @endif--}}
 
 
 
