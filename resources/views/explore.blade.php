@@ -107,7 +107,7 @@
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
-                                        <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
+                                        <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:200px; object-fit: fill;">
                                     </div>
                                     <div class="iteminfo">
                                         <p>{{ $item->itemname }}</p>
@@ -127,7 +127,7 @@
                                 @endphp
                                 <div class="item1">
                                     <div class="itempic">
-                                        <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
+                                        <img src="{{ $imageSrc }}" alt="item image" class="itemimage" style="width: 100%; height:200px; object-fit: fill;">
                                     </div>
                                     <div class="iteminfo">
                                         <p>{{ $item->itemname }}</p>

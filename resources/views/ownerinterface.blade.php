@@ -256,9 +256,9 @@
                         </p>
                     @endif
 
-{{--                @else--}}
-{{--                    <p>N/A - Not currently rented or sold</p>--}}
-{{--                @endif--}}
+                @else
+                    <p>N/A</p>
+                @endif
 
 
 

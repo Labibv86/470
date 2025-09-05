@@ -130,7 +130,7 @@
                                             @php
                                                 $imageSrc = asset($item->itemimage)
                                             @endphp
-                                            <img src="{{ $imageSrc }}" alt="itemimage" class="itemimage" style="width: 100%; height:250px; object-fit: fill;">
+                                            <img src="{{ $imageSrc }}" alt="itemimage" class="itemimage" style="width: 100%; height:200px; object-fit: fill;">
                                         </div>
                                         <div class="iteminfo">
                                             <p>Item Name: {{ $item->itemname }}</p>
