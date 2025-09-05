@@ -5,65 +5,6 @@ use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
-use Illuminate\Http\Request;
-
-Route::get('/test-file-upload', function(Request $request) {
-    return view('test-upload');
-});
-
-Route::post('/test-file-upload', function(Request $request) {
-    \Log::info('File upload test:', [
-        'hasFile' => $request->hasFile('testfile'),
-        'fileValid' => $request->file('testfile')?->isValid(),
-        'fileSize' => $request->file('testfile')?->getSize(),
-        'fileName' => $request->file('testfile')?->getClientOriginalName()
-    ]);
-
-    if ($request->hasFile('testfile') && $request->file('testfile')->isValid()) {
-        return 'File is valid and ready for upload!';
-    }
-
-    return 'No valid file uploaded';
-});
-
-Route::get('/test-supabase-upload-form', function() {
-    return '
-    <form method="POST" action="/test-supabase-upload" enctype="multipart/form-data">
-        ' . csrf_field() . '
-        <input type="file" name="testimage" required>
-        <button type="submit">Test Supabase Upload</button>
-    </form>
-    ';
-});
-
-
-Route::get('/env-check', function() {
-    return [
-        'SUPABASE_PROJECT_URL' => env('SUPABASE_PROJECT_URL'),
-        'SUPABASE_API_KEY' => env('SUPABASE_API_KEY') ? 'SET (' . substr(env('SUPABASE_API_KEY'), 0, 20) . '...)' : 'MISSING',
-        'APP_ENV' => env('APP_ENV')
-    ];
-});
-
-Route::post('/test-supabase-upload', function(Request $request) {
-    try {
-        if (!$request->hasFile('testimage')) {
-            return 'No file uploaded';
-        }
-
-        $storageService = new SupabaseStorageService();
-        $url = $storageService->uploadImage($request->file('testimage'), 'shop-logos');
-
-        if ($url) {
-            return 'SUCCESS! <img src="' . $url . '" style="max-width: 300px;"><br>URL: ' . $url;
-        } else {
-            return 'UPLOAD FAILED - Check Render logs for details';
-        }
-
-    } catch (\Exception $e) {
-        return 'ERROR: ' . $e->getMessage();
-    }
-});
 
 
 Route::get('/', fn() => redirect()->route('login.page'));
