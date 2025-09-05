@@ -156,7 +156,7 @@ body {
 
     border-radius: 10px;
     border-width: 4px;
-    border-color: rgb(133, 133, 133);
+    border-color: rgb(143, 126, 126);
 
     padding-top: 5px;
     padding-bottom: 10px;
@@ -301,7 +301,7 @@ body {
 
 .trending {
     display: block;
-    background-color: rgb(53, 53, 53);
+    background-color: rgb(62, 62, 62);
     border: solid;
     border-radius: 15px;
     width: 100%;

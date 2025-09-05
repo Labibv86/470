@@ -156,7 +156,7 @@ body {
 
     border-radius: 10px;
     border-width: 4px;
-    border-color: rgb(136, 87, 87);
+    border-color: rgb(143, 126, 126);
 
     padding-top: 5px;
     padding-bottom: 10px;
@@ -301,7 +301,7 @@ body {
 
 .trending {
     display: block;
-    background-color: rgb(74, 74, 74);
+    background-color: rgb(62, 62, 62);
     border: solid;
     border-radius: 15px;
     width: 100%;
@@ -337,7 +337,7 @@ body {
 }
 
 .setbid{
-    width: 97.5%;
+    width: 98.5%;
 }
 
 
