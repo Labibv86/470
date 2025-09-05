@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
-use App\Services\SupabaseStorageService;
+
 
 class OwnerShopSetupController extends Controller
 {
@@ -43,28 +43,28 @@ class OwnerShopSetupController extends Controller
         }
 
         try {
-            // ========== ONLY THESE 4 LINES CHANGE ==========
+            // ✅ Uploadcare Integration
             if (!$request->hasFile('shoplogo') || !$request->file('shoplogo')->isValid()) {
                 return back()->withErrors(['shoplogo' => 'Invalid or missing shop logo'])->withInput();
             }
 
-            $logoUrl = uploadToImgBB($request->file('shoplogo'));
+            $logoUrl = uploadToUploadcare($request->file('shoplogo'));
 
             if (!$logoUrl) {
-                throw new Exception('Failed to upload shop logo to ImgBB');
+                throw new Exception('Failed to upload shop logo to Uploadcare');
             }
-            // ========== END OF CHANGES ==========
 
+            // ✅ Save shop with Uploadcare URL
             Shop::create([
-                'shopname'     => $request->shopname,
-                'shopemail'    => $request->shopemail,
-                'shoppassword' => $request->shoppassword,
-                'shopphone'    => $request->shopphone,
-                'license'      => $request->license,
-                'officeaddress'=> $request->officeaddress,
-                'shoplogo'     => $logoUrl, // Store URL instead of path
-                'userid'       => $owner->userid,
-                'points'       => 100000000,
+                'shopname'      => $request->shopname,
+                'shopemail'     => $request->shopemail,
+                'shoppassword'  => $request->shoppassword,
+                'shopphone'     => $request->shopphone,
+                'license'       => $request->license,
+                'officeaddress' => $request->officeaddress,
+                'shoplogo'      => $logoUrl, // CDN URL from Uploadcare
+                'userid'        => $owner->userid,
+                'points'        => 100000000,
             ]);
 
             return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
