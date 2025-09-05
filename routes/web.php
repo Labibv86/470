@@ -6,6 +6,21 @@ use App\Http\Controllers\ExploreOutController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\ResaleController;
 
+Route::get('/test-imgbb-setup', function() {
+    // Test if helper function loads
+    if (!function_exists('uploadToImgBB')) {
+        return 'Helper function not loaded';
+    }
+
+    // Test if API key is set
+    if (empty(env('IMGBB_API_KEY'))) {
+        return 'API key not set';
+    }
+
+    return 'Ready for ImgBB integration!';
+});
+
+
 
 Route::get('/', fn() => redirect()->route('login.page'));
 

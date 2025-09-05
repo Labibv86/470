@@ -43,15 +43,18 @@ class OwnerShopSetupController extends Controller
         }
 
         try {
-            // UPLOAD TO SUPABASE - CHANGED THIS PART
-            $storageService = new SupabaseStorageService();
-            $logoUrl = $storageService->uploadImage($request->file('shoplogo'), 'shop-logos');
-
-            if (!$logoUrl) {
-                throw new \Exception('Failed to upload shop logo. Please try again.');
+            // ========== ONLY THESE 4 LINES CHANGE ==========
+            if (!$request->hasFile('shoplogo') || !$request->file('shoplogo')->isValid()) {
+                return back()->withErrors(['shoplogo' => 'Invalid or missing shop logo'])->withInput();
             }
 
-            // Create shop with Supabase URL
+            $logoUrl = uploadToImgBB($request->file('shoplogo'));
+
+            if (!$logoUrl) {
+                throw new Exception('Failed to upload shop logo to ImgBB');
+            }
+            // ========== END OF CHANGES ==========
+
             Shop::create([
                 'shopname'     => $request->shopname,
                 'shopemail'    => $request->shopemail,
@@ -59,14 +62,14 @@ class OwnerShopSetupController extends Controller
                 'shopphone'    => $request->shopphone,
                 'license'      => $request->license,
                 'officeaddress'=> $request->officeaddress,
-                'shoplogo'     => $logoUrl, // STORE URL NOW, NOT PATH
+                'shoplogo'     => $logoUrl, // Store URL instead of path
                 'userid'       => $owner->userid,
                 'points'       => 100000000,
             ]);
 
             return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
         }
     }
