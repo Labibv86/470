@@ -33,15 +33,19 @@ class OwnerShopSetupController extends Controller
             'license'        => 'required|numeric|unique:shops,license',
             'officeaddress'  => 'required|string',
             'owneremail'     => 'required|email|exists:users,email',
-            'shoplogo'       => 'required|image|max:2048',
+
+<<<<<<< Updated upstream
+=======
         ]);
 
+>>>>>>> Stashed changes
         $owner = User::where('email', $request->owneremail)->first();
 
         if (!$owner) {
             return back()->withErrors(['owneremail' => 'Owner email does not exist'])->withInput();
         }
 
+<<<<<<< Updated upstream
         try {
             // ✅ Uploadcare Integration
             if (!$request->hasFile('shoplogo') || !$request->file('shoplogo')->isValid()) {
@@ -72,6 +76,24 @@ class OwnerShopSetupController extends Controller
         } catch (Exception $e) {
             return back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()])->withInput();
         }
+=======
+
+        $logoPath = 'images/default-shop.png';
+
+        Shop::create([
+            'shopname'     => $request->shopname,
+            'shopemail'    => $request->shopemail,
+            'shoppassword' => $request->shoppassword,
+            'shopphone'    => $request->shopphone,
+            'license'      => $request->license,
+            'officeaddress'=> $request->officeaddress,
+            'shoplogo'     => $logoPath, // Store default image path
+            'userid'       => $owner->userid,
+            'points'       => 100000000,
+        ]);
+
+        return redirect()->route('ownershopsetup.page')->with('success', 'Shop Registered!');
+>>>>>>> Stashed changes
     }
 
     public function loginToShop(Request $request)
@@ -83,9 +105,6 @@ class OwnerShopSetupController extends Controller
 
         $userid = Session::get('userid');
 
-//        if (!$userid) {
-//            return redirect()->route('login')->withErrors('Please login first.');
-//        }
 
 
         $shop = Shop::where([

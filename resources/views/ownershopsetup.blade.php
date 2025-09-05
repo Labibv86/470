@@ -40,7 +40,7 @@
                     <input class="nid" type="text" placeholder="Business License No." name="license" value="{{ old('license') }}">
                     <input class="address" type="text" placeholder="Office address" name="officeaddress" value="{{ old('officeaddress') }}">
                     <input class="owneremail" type="email" placeholder="Owner Email" name="owneremail" value="{{ old('owneremail') }}">
-                    <input class="shoplogo" type="file" name="shoplogo" accept="image/*">
+                    <input type="hidden" name="shoplogo" value="default-shop.png">
                     <div class="nextbox">
                         <button type="submit" name="next">Shop Register</button>
                     </div>
